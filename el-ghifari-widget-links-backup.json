@@ -1,0 +1,12 @@
+{
+  "format": "el-ghifari-widget-links",
+  "version": 1,
+  "createdAt": "2026-10-13T11:10:00.632Z",
+  "email": "elghifarin@gmail.com",
+  "links": {
+    "indonesia": "https://www.google.com/search?tbm=nws&q=berita%20Indonesia",
+    "technology": "https://www.google.com/search?tbm=nws&q=teknologi%20AI",
+    "business": "https://www.google.com/search?tbm=nws&q=bisnis%20ekonomi",
+    "sports": "https://www.google.com/search?tbm=nws&q=olahraga"
+  }
+}
