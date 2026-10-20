@@ -717,19 +717,18 @@ info.innerHTML='<b></b><span></span>';info.querySelector('b').textContent=p.data
 <button aria-label="Tutup pengaturan" class="widget-admin-close" id="widgetAdminClose" type="button">×</button>
 </div>
 <section id="geminiApiAdminPanel" class="admin-custom-widgets" aria-labelledby="apiKeysAdminTitle" style="display:block;margin:18px 0;position:relative;z-index:1">
-    <h3 id="apiKeysAdminTitle">Kelola API Keys AI — Aktifkan Gemini</h3>
-    <p>Tempel Google AI Studio API key lalu tekan <b>Aktifkan &amp; Tes API</b>. Jika berhasil, chat AI©el-ghifari akan memakai Gemini saat webhook tidak dikonfigurasi. Key tersimpan hanya di browser ini.</p>
+    <h3 id="apiKeysAdminTitle">Pengaturan AI — Ollama Lokal</h3>
+    <p>Hubungkan EL-GHIFARI ke Ollama yang berjalan di komputer Anda. Ollama lokal tidak memerlukan API key. Pastikan Ollama aktif dan model sudah diunduh.</p>
     <div style="padding:12px;border:1px solid #38bdf8;border-radius:10px;background:#06152d;margin:12px 0;color:#dbeafe">
-      <b>📁 Project-AI©el-ghifari/</b><pre style="white-space:pre-wrap;margin:8px 0;color:#a5f3fc">├── 📄 main.py          ← backend Python (opsional untuk server)
-├── 📄 .env             ← GEMINI_API_KEY=isi_api_key_di_server
-└── 📄 .gitignore       ← pastikan .env tidak ter-upload</pre>
-      <small>Catatan: HTML saja tidak dapat membuat file main.py/.env di hosting. Untuk keamanan terbaik, simpan key di backend; mode browser di bawah ini cocok untuk uji coba pribadi, bukan situs publik.</small>
+      <b>🦙 Ollama Local AI</b>
+      <label>Alamat Ollama<input id="ollamaEndpoint" type="url" value="http://127.0.0.1:11434" placeholder="http://127.0.0.1:11434"></label>
+      <label>Nama model Ollama<input id="ollamaModel" type="text" value="llama3.2" placeholder="Contoh: llama3.2, qwen2.5:7b"></label>
+      <small>Alamat ini berlaku untuk Ollama di komputer yang membuka halaman. Untuk HTML di hosting/HP, 127.0.0.1 menunjuk ke perangkat itu sendiri, bukan komputer server Anda.</small>
     </div>
-    <label>Google AI Studio API Key untuk mengaktifkan chat<input id="geminiDirectKey" autocomplete="off" placeholder="Tempel API key Google AI Studio" type="password"></label>
-    <div class="widget-admin-actions"><button class="widget-admin-save" id="geminiActivate" type="button">⚡ Aktifkan &amp; Tes API</button><button class="widget-admin-reset" id="geminiKeyClear" type="button">Hapus key aktif</button></div>
-    <p class="widget-admin-status" id="geminiDirectStatus" aria-live="polite"></p>
-    <p>Daftar key tambahan (opsional). Data disimpan di browser ini saja (localStorage), bukan tersinkron ke perangkat lain.</p>
-    <label>Nama / layanan<input id="apiKeyLabel" maxlength="80" placeholder="Contoh: Google AI Studio / Gemini" type="text"></label>
+    <div class="widget-admin-actions"><button class="widget-admin-save" id="ollamaActivate" type="button">⚡ Simpan &amp; Tes Ollama</button><button class="widget-admin-reset" id="ollamaClear" type="button">Reset pengaturan</button></div>
+    <p class="widget-admin-status" id="ollamaStatus" aria-live="polite"></p>
+    <p>Daftar API key layanan lain (opsional; tidak dipakai oleh Ollama lokal). Data disimpan di browser ini saja.</p>
+    <label>Nama / layanan<input id="apiKeyLabel" maxlength="80" placeholder="Contoh: layanan cloud lain" type="text"></label>
     <label>API Key<input id="apiKeyValue" autocomplete="off" placeholder="Tempel API key di sini" type="password"></label>
     <div class="widget-admin-actions">
       <button class="widget-admin-save" id="apiKeyAdd" type="button">＋ Tambah</button>
@@ -1533,7 +1532,7 @@ function configureWebhook() {
 }
 
 function localAssistantReply(message, file) {
-  // Jawaban lokal tanpa server/API. Untuk AI sungguhan, hubungkan Production Webhook n8n.
+  // Jawaban lokal tanpa server/API. Untuk AI sungguhan, aktifkan Ollama lokal atau hubungkan Production Webhook n8n.
   const q = String(message || '').toLowerCase().trim();
   if (file && !q) return `File "${file.name}" sudah dipilih. Mode lokal belum dapat membaca isi dokumen secara otomatis. Untuk analisis dokumen, hubungkan webhook n8n atau layanan AI terlebih dahulu.`;
   if (/^(halo|hai|hi|assalamualaikum|pagi|siang|sore|malam|permisi)[!. ]*$/.test(q))
@@ -1587,18 +1586,27 @@ async function sendMessage() {
     input.value = ''; input.style.height = '40px';
     $('sendBtn').disabled = true; showTyping();
     try {
-      // Gunakan Gemini jika API key telah diaktifkan dari panel admin; jika tidak, gunakan mode lokal.
-      const activeKey = localStorage.getItem('elghifari_gemini_active_key_v1');
+      // Gunakan Ollama lokal sebagai AI utama ketika webhook n8n tidak dipasang.
+      const endpoint=(localStorage.getItem('elghifari_ollama_endpoint_v1')||'http://127.0.0.1:11434').replace(/\/+$/,'');
+      const model=localStorage.getItem('elghifari_ollama_model_v1')||'llama3.2';
       let reply;
-      if(activeKey){
-        const contents=[{role:'user',parts:[{text:message || 'Tolong analisis file yang dilampirkan.'}]}];
-        const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+encodeURIComponent(activeKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});
-        const d=await r.json(); if(!r.ok)throw new Error(d?.error?.message||('Gemini HTTP '+r.status));
-        reply=d?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim()||'Gemini tidak mengembalikan jawaban.';
-      } else { await new Promise(resolve => setTimeout(resolve, 350)); reply=localAssistantReply(message, selectedFile); }
+      const promptText=(message||'Tolong bantu dengan file yang dilampirkan.')+
+        (selectedFile?'\\n\\nCatatan: file "'+selectedFile.name+'" dilampirkan. Jika isi file belum disediakan, minta pengguna menyalin teks atau gunakan alur backend yang mendukung ekstraksi file.':'');
+      const controller=new AbortController();
+      const timeoutId=setTimeout(()=>controller.abort(),120000);
+      let r;
+      try {
+        r=await fetch(endpoint+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'user',content:promptText}],stream:false}),signal:controller.signal});
+      } catch(networkError) {
+        if(networkError.name==='AbortError')throw new Error('Ollama timeout setelah 120 detik.');
+        throw new Error('Tidak dapat mengakses Ollama. Jalankan Ollama, periksa alamat, dan atur OLLAMA_ORIGINS untuk origin halaman. Detail: '+(networkError.message||'Failed to fetch'));
+      } finally { clearTimeout(timeoutId); }
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(d?.error||('Ollama HTTP '+r.status));
+      reply=d?.message?.content?.trim()||'Ollama tidak mengembalikan jawaban. Periksa nama model.';
       hideTyping(); if (selectedFile) removeFile(); addMessage(reply, 'bot');
     } catch (err) {
-      hideTyping(); addMessage('Maaf, pesan belum dapat diproses. Silakan coba lagi.', 'bot', true);
+      hideTyping(); addMessage('Gagal memproses pesan: '+(err.message||String(err)), 'bot', true);
     } finally {
       $('sendBtn').disabled = false; input.focus();
     }
@@ -1778,22 +1786,42 @@ function loadHistory(){
 
 
 <script>
-/* Aktivasi Gemini langsung untuk pengujian browser pribadi. */
+/* Pengaturan dan tes koneksi Ollama lokal */
 (function(){
- const keyEl=document.getElementById('geminiDirectKey'), status=document.getElementById('geminiDirectStatus');
- if(!keyEl||!status)return;
- const KEY='elghifari_gemini_active_key_v1';
- try{keyEl.value=localStorage.getItem(KEY)||''; if(keyEl.value)status.textContent='API key aktif tersimpan di browser ini. Tekan Aktifkan & Tes API untuk memeriksa lagi.';}catch(e){}
- document.getElementById('geminiActivate').addEventListener('click',async()=>{
-  const key=keyEl.value.trim(); if(!key){status.textContent='Tempel API key terlebih dahulu.';return;}
-  status.textContent='Menguji koneksi Gemini…';
-  try{
-   const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Balas singkat: API AI©el-ghifari aktif.'}]}]})});
-   const d=await r.json(); if(!r.ok)throw new Error(d?.error?.message||('HTTP '+r.status));
-   localStorage.setItem(KEY,key); status.textContent='✅ Gemini berhasil terhubung dan API key aktif di browser ini.';
-  }catch(e){status.textContent='❌ Gagal mengaktifkan API: '+(e.message||String(e))+' — periksa key, kuota, dan izin API.';}
+ const endpointEl=document.getElementById('ollamaEndpoint');
+ const modelEl=document.getElementById('ollamaModel');
+ const status=document.getElementById('ollamaStatus');
+ const activate=document.getElementById('ollamaActivate');
+ const clear=document.getElementById('ollamaClear');
+ if(!endpointEl||!modelEl||!status||!activate||!clear)return;
+ const ENDPOINT_KEY='elghifari_ollama_endpoint_v1';
+ const MODEL_KEY='elghifari_ollama_model_v1';
+ try {
+   endpointEl.value=localStorage.getItem(ENDPOINT_KEY)||endpointEl.value||'http://127.0.0.1:11434';
+   modelEl.value=localStorage.getItem(MODEL_KEY)||modelEl.value||'llama3.2';
+ } catch(e) {}
+ activate.addEventListener('click',async()=>{
+   const endpoint=endpointEl.value.trim().replace(/\/+$/,'');
+   const model=modelEl.value.trim();
+   if(!/^https?:\/\//i.test(endpoint)){status.textContent='Alamat harus diawali http:// atau https://';return;}
+   if(!model){status.textContent='Isi nama model Ollama, misalnya llama3.2.';return;}
+   status.textContent='Menguji Ollama dan model '+model+'…';
+   try{
+     const r=await fetch(endpoint+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages:[{role:'user',content:'Balas singkat: Ollama EL-GHIFARI aktif.'}],stream:false})});
+     const d=await r.json().catch(()=>({}));
+     if(!r.ok)throw new Error(d?.error||('HTTP '+r.status));
+     if(!d?.message?.content)throw new Error('Ollama merespons tetapi tidak ada teks jawaban. Pastikan model sudah tersedia.');
+     localStorage.setItem(ENDPOINT_KEY,endpoint);localStorage.setItem(MODEL_KEY,model);
+     status.textContent='✅ Ollama tersambung. Model '+model+' berhasil menjawab.';
+   }catch(e){
+     status.textContent='❌ Gagal terhubung: '+(e.message||String(e))+'. Pastikan Ollama berjalan, model tersedia, dan CORS mengizinkan origin halaman (OLLAMA_ORIGINS).';
+   }
  });
- document.getElementById('geminiKeyClear').addEventListener('click',()=>{localStorage.removeItem(KEY);keyEl.value='';status.textContent='API key aktif dihapus dari browser ini.';});
+ clear.addEventListener('click',()=>{
+   localStorage.removeItem(ENDPOINT_KEY);localStorage.removeItem(MODEL_KEY);
+   endpointEl.value='http://127.0.0.1:11434';modelEl.value='llama3.2';
+   status.textContent='Pengaturan direset. Tekan Simpan & Tes Ollama untuk mengaktifkan.';
+ });
 })();
 </script>
 <script>
