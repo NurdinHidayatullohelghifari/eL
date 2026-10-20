@@ -1,0 +1,23 @@
+# Contoh file WSGI PythonAnywhere. Salin ke file WSGI yang ditunjukkan tab Web.
+import os
+import sys
+
+PROJECT_DIR = "/home/nurdinhidayatullohelghifari/elghifari-api"
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
+# Memuat .env privat sebelum mengimpor aplikasi. Jangan simpan .env di GitHub.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(PROJECT_DIR, ".env"), override=False)
+    load_dotenv(os.path.expanduser("~/.env"), override=False)
+except ImportError:
+    pass
+
+os.environ.setdefault(
+    "FRONTEND_ORIGINS",
+    "https://nurdinhidayatullohelghifari.github.io"
+)
+os.environ.setdefault("GROQ_MODEL", "openai/gpt-oss-120b")
+os.environ.setdefault("GROQ_VISION_MODEL", "qwen/qwen3.8-27b")
+from flask_app import app as application
