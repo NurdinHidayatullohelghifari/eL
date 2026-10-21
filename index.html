@@ -1604,7 +1604,20 @@ function getAIConversation(currentPrompt, hasAttachment=false) {
   if (hasAttachment && history.length && history[history.length-1].role === 'user') {
     history[history.length-1].content = currentPrompt;
   }
-  return history.slice(-16);
+  // Batasi konteks yang dikirim ke API agar tidak menghabiskan kuota TPM.
+  const recent = history.slice(-6).map(item => ({
+    role: item.role,
+    content: String(item.content || '').slice(0, 900)
+  }));
+  let total = 0;
+  const limited = [];
+  for (let i = recent.length - 1; i >= 0; i--) {
+    const item = recent[i];
+    if (total + item.content.length > 3500) continue;
+    limited.unshift(item);
+    total += item.content.length;
+  }
+  return limited;
 }
 
 async function sendMessage() {
@@ -1619,7 +1632,7 @@ async function sendMessage() {
     try {
       // Chat dikirim ke backend lokal; API key tetap berada di server.py.
       const model=(localStorage.getItem('elghifari_groq_model_v1')||$('geminiModel')?.value||'openai/gpt-oss-120b').trim();
-      const promptText=(message||'Tolong bantu dengan file yang dilampirkan.')+
+      const promptText=(message||'Tolong bantu dengan file yang dilampirkan.').slice(0,5000)+
         (selectedFile && !(selectedFile.type||'').startsWith('image/')?'\n\nCatatan: file "'+selectedFile.name+'" dilampirkan. Backend saat ini menganalisis gambar; isi dokumen non-gambar belum diekstrak otomatis.':'');
       let requestBody={message:promptText,model:model,messages:getAIConversation(promptText, !!selectedFile)};
       if(selectedFile && selectedFile.type && selectedFile.type.startsWith('image/')){
