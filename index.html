@@ -730,7 +730,7 @@ info.innerHTML='<b></b><span></span>';info.querySelector('b').textContent=p.data
       <label>Model Groq<input id="geminiModel" type="text" value="openai/gpt-oss-120b" placeholder="openai/gpt-oss-120b"></label>
       <small>Model dikirim ke backend lokal. API key tidak pernah dikirim ke browser.</small>
     </div>
-    <div class="widget-admin-actions"><button class="widget-admin-save" id="geminiActivate" type="button">⚡ Simpan &amp; Tes Grok</button><button class="widget-admin-reset" id="geminiClear" type="button">Reset model</button></div>
+    <div class="widget-admin-actions"><button class="widget-admin-save" id="geminiActivate" type="button">⚡ Simpan &amp; Tes Groq</button><button class="widget-admin-reset" id="geminiClear" type="button">Reset model</button></div>
     <p class="widget-admin-status" id="geminiStatus" aria-live="polite"></p>
     <p>Koneksi AI memakai API key Groq yang dikonfigurasi pada server.py. Form API key browser di bawah tidak digunakan untuk chat.</p>
     <label>Nama / layanan<input id="apiKeyLabel" maxlength="80" placeholder="Contoh: layanan cloud lain" type="text"></label>
@@ -1832,9 +1832,14 @@ function loadHistory(){
  activate.addEventListener('click',async()=>{
   const model=modelEl.value.trim();
   if(!/^[a-zA-Z0-9._/-]+$/.test(model)){status.textContent='Nama model tidak valid.';return;}
-  status.textContent='Menguji backend Groq…';
+  status.textContent='Memeriksa backend dan konfigurasi Groq…';
   try{
-   const r=await fetch((window.EL_GHIFARI_API_BASE || '') + '/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Balas singkat: Groq EL-GHIFARI aktif.',model:model})});
+   const base=(window.EL_GHIFARI_API_BASE || '').replace(/\\/$/,'');
+   const healthResponse=await fetch(base+'/health',{method:'GET',cache:'no-store'});
+   const health=await healthResponse.json().catch(()=>({}));
+   if(!healthResponse.ok) throw new Error('Health check HTTP '+healthResponse.status);
+   if(health.api_key_configured===false) throw new Error('Backend aktif, tetapi GROQ_API_KEY belum dipasang pada server PythonAnywhere.');
+   const r=await fetch(base + '/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Balas singkat: Groq EL-GHIFARI aktif.',model:model})});
    const d=await r.json().catch(()=>({}));
    if(!r.ok)throw new Error(d?.error||('HTTP '+r.status));
    const reply=(d?.answer||d?.reply||'').trim();
