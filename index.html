@@ -1443,7 +1443,7 @@ info.innerHTML='<b></b><span></span>';info.querySelector('b').textContent=p.data
 <script id="n8n-chat-script">
 
 const CONFIG = {
-  WEBHOOK_URL: localStorage.getItem('elghifzri_n8n_webhook') || '', // Atur lewat tombol 🔗
+  WEBHOOK_URL: '', // Gunakan backend EL-GHIFARI secara default; webhook n8n hanya jika diaktifkan manual.
   SESSION_ID: 'user_' + Math.random().toString(36).slice(2, 11),
   STORAGE_KEY: 'n8n_chat_history',
   MAX_HISTORY: 50
@@ -1643,17 +1643,29 @@ async function sendMessage() {
       }
       let r;
       try {
-        r=await fetch((window.EL_GHIFARI_API_BASE || '') + '/api/chat',{
-          method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(requestBody)
-        });
+        const apiBase=(window.EL_GHIFARI_API_BASE || '').trim().replace(/\/+$/,'');
+        if(!apiBase) throw new Error('Alamat backend EL-GHIFARI belum diatur.');
+        const controller=new AbortController();
+        const timeoutId=setTimeout(()=>controller.abort(),60000);
+        try {
+          r=await fetch(apiBase + '/api/chat',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Accept':'application/json'},
+            body:JSON.stringify(requestBody),
+            signal:controller.signal
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
       } catch(networkError) {
+        if(networkError.name==='AbortError') throw new Error('Backend tidak merespons dalam 60 detik. Periksa status PythonAnywhere dan log server.');
+        if(networkError.message && networkError.message.includes('Alamat backend')) throw networkError;
         throw new Error('Backend EL-GHIFARI tidak dapat diakses. Periksa backend HTTPS PythonAnywhere dan konfigurasi CORS. Detail: '+(networkError.message||'Failed to fetch'));
       }
       const d=await r.json().catch(()=>({}));
       if(!r.ok) throw new Error(d?.error||('Backend HTTP '+r.status));
-      reply=(d?.answer||d?.reply||'').trim()||'Groq tidak mengembalikan teks jawaban.';
-      hideTyping(); if (selectedFile) removeFile(); addMessage(reply, 'bot');
+      const replyText=(d?.answer||d?.reply||'').trim()||'Groq tidak mengembalikan teks jawaban.';
+      hideTyping(); if (selectedFile) removeFile(); addMessage(replyText, 'bot');
     } catch (err) {
       hideTyping(); addMessage('Gagal memproses pesan: '+(err.message||String(err)), 'bot', true);
     } finally {
