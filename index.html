@@ -610,6 +610,95 @@
       transform: translateX(0);
     }
   }
+
+  /* ===== POLISH DESIGN & BACKGROUND: COSMIC NEON ===== */
+  :root {
+    --bg-primary: #080b18;
+    --bg-secondary: #101329;
+    --bg-tertiary: #171b35;
+    --text-primary: #f1f4ff;
+    --text-secondary: #a4afd0;
+    --neon-cyan: #43e8ff;
+    --neon-purple: #9b78ff;
+    --neon-magenta: #e879ff;
+    --neon-pink: #ff65b8;
+    --accent: #43e8ff;
+    --border: rgba(128, 151, 226, .22);
+    --hover: rgba(76, 94, 172, .22);
+    --glow-cyan: 0 0 12px rgba(67, 232, 255, .24), 0 0 28px rgba(67, 232, 255, .10);
+    --glow-purple: 0 0 12px rgba(155, 120, 255, .24), 0 0 28px rgba(155, 120, 255, .10);
+  }
+  body {
+    background-color: var(--bg-primary);
+    background-image:
+      radial-gradient(ellipse at 12% 8%, rgba(123, 77, 255, .18), transparent 38%),
+      radial-gradient(ellipse at 85% 82%, rgba(0, 205, 255, .13), transparent 42%),
+      radial-gradient(ellipse at 52% 45%, rgba(255, 76, 183, .07), transparent 55%),
+      linear-gradient(145deg, #070a16 0%, #0c1024 48%, #080b19 100%);
+  }
+  .sidebar {
+    background: linear-gradient(180deg, rgba(18, 20, 43, .97), rgba(10, 13, 29, .98));
+    border-right-color: rgba(115, 137, 220, .25);
+    box-shadow: 8px 0 30px rgba(0, 0, 0, .16);
+  }
+  .main { background: transparent; }
+  .main-header {
+    background: linear-gradient(90deg, rgba(15, 18, 39, .88), rgba(20, 18, 42, .78));
+    border-bottom-color: rgba(120, 143, 225, .20);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .10);
+  }
+  .feature-item, .chat-item, .header-actions, .input-tools {
+    transition: background .22s ease, border-color .22s ease, transform .22s ease, box-shadow .22s ease;
+  }
+  .feature-item:hover {
+    background: linear-gradient(100deg, rgba(67, 232, 255, .08), rgba(155, 120, 255, .12));
+    border-color: rgba(120, 155, 255, .25);
+    transform: translateX(2px);
+  }
+  .feature-icon {
+    background: linear-gradient(135deg, rgba(67, 232, 255, .13), rgba(155, 120, 255, .19));
+    border-color: rgba(140, 160, 255, .25);
+  }
+  .chat-item.active {
+    background: linear-gradient(100deg, rgba(67, 232, 255, .12), rgba(155, 120, 255, .15));
+    border: 1px solid rgba(128, 151, 226, .24);
+  }
+  .welcome-container { position: relative; }
+  .welcome-robot {
+    /* Blend the dark backdrop of the center banner into the cosmic page background */
+    background: transparent !important;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 22px rgba(155, 120, 255, .25));
+  }
+  .welcome-title {
+    background-image: linear-gradient(90deg, #5beaff 0%, #b19aff 48%, #ff79c6 100%);
+    text-shadow: 0 0 26px rgba(123, 120, 255, .18);
+  }
+  .welcome-subtitle { color: #b2bddb; }
+  .input-container {
+    background: linear-gradient(180deg, rgba(8, 11, 24, .35), rgba(8, 11, 24, .92));
+  }
+  .input-wrapper {
+    background: linear-gradient(135deg, rgba(25, 29, 57, .96), rgba(19, 20, 43, .96));
+    border-color: rgba(133, 151, 229, .25);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .20);
+  }
+  .input-wrapper:focus-within {
+    border-color: rgba(67, 232, 255, .65);
+    box-shadow: 0 0 0 3px rgba(67, 232, 255, .07), var(--glow-cyan);
+  }
+  .new-chat-btn {
+    background: linear-gradient(115deg, rgba(67, 232, 255, .12), rgba(155, 120, 255, .15), rgba(255, 101, 184, .08));
+    border-color: rgba(125, 150, 230, .25);
+  }
+  .send-btn { background-image: linear-gradient(135deg, #35dff7, #8f72ff 58%, #e76bd0); }
+  .section-title { color: #67eaff; text-shadow: 0 0 10px rgba(67, 232, 255, .25); }
+  .sidebar-footer { border-top-color: rgba(128, 151, 226, .20); }
+  ::selection { background: rgba(155, 120, 255, .35); color: #fff; }
+  @media (max-width: 768px) {
+    .main-header { background: rgba(13, 16, 34, .94); }
+    .input-container { background: linear-gradient(180deg, rgba(8, 11, 24, .55), rgba(8, 11, 24, .98)); }
+  }
 </style>
 </head>
 <body>
@@ -619,7 +708,7 @@
 <div class="logo">
 <!-- ROBOT COSMIC ICON -->
 <div class="logo-icon">
-<img alt="Foto badut neon merah — ikon kiri AI©el-ghifari" class="robot-svg" src="https://raw.githubusercontent.com/NurdinHidayatullohelghifari/eL/main/download.png"/>
+<img alt="Foto badut neon merah — ikon kiri AI©el-ghifari" class="robot-svg" src="https://raw.githubusercontent.com/NurdinHidayatullohelghifari/eL/main/download%281%29.png"/>
 </div>
 <div>
 <span class="logo-text">AI©el-ghifari</span>
@@ -722,7 +811,7 @@
 <div class="chat-area" id="chatArea">
 <div class="welcome-container">
 <!-- ROBOT COSMIC BESAR -->
-<img alt="Banner badut neon merah — tampilan tengah AI©el-ghifari" class="welcome-robot" src="https://raw.githubusercontent.com/NurdinHidayatullohelghifari/eL/main/download%281%29.png"/>
+<img alt="Banner badut neon merah — tampilan tengah AI©el-ghifari" class="welcome-robot" src="https://raw.githubusercontent.com/NurdinHidayatullohelghifari/eL/main/download.png"/>
 <h1 class="welcome-title">Halo! 👋 Saya AI©el-ghifari</h1>
 <p class="welcome-subtitle">Apa yang ingin Anda kerjakan hari ini?</p>
 </div>
