@@ -731,64 +731,19 @@
 <span>Chat baru</span>
 </button>
 <div class="sidebar-scroll">
-<!-- ===== FITUR ===== -->
+<!-- ===== FITUR UPGRADE ===== -->
 <div class="section-title">✦ Skill AI</div>
-<div class="feature-item" onclick="selectFeature('web')">
-<div class="feature-icon">🌐</div>
-<div class="feature-text">
-<div class="feature-name">Pencarian web</div>
-<div class="feature-desc">Telusuri informasi terbaru</div>
-</div>
-</div>
-<div class="feature-item" onclick="selectFeature('image')">
-<div class="feature-icon">🎨</div>
-<div class="feature-text">
-<div class="feature-name">Generasi gambar</div>
-<div class="feature-desc">Buat gambar dari deskripsi</div>
-</div>
-</div>
-<div class="feature-item" onclick="selectFeature('file')">
-<div class="feature-icon">📄</div>
-<div class="feature-text">
-<div class="feature-name">File & dokumen</div>
-<div class="feature-desc">Baca dan rangkum dokumen</div>
-</div>
-</div>
-<div class="feature-item" onclick="selectFeature('data')">
-<div class="feature-icon">📊</div>
-<div class="feature-text">
-<div class="feature-name">Analisis data</div>
-<div class="feature-desc">Olah data dan buat visualisasi</div>
-</div>
-</div>
-<div class="feature-item" onclick="selectFeature('code')">
-<div class="feature-icon">💻</div>
-<div class="feature-text">
-<div class="feature-name">Pemrograman</div>
-<div class="feature-desc">Tulis, jelaskan, dan debug kode</div>
-</div>
-</div>
-<div class="feature-item" onclick="selectFeature('write')">
-<div class="feature-icon">✍️</div>
-<div class="feature-text">
-<div class="feature-name">Menulis & kreativitas</div>
-<div class="feature-desc">Draft, ide, dan penyuntingan</div>
-</div>
-</div>
-<div class="feature-item" onclick="selectFeature('learn')">
-<div class="feature-icon">🎓</div>
-<div class="feature-text">
-<div class="feature-name">Tutor belajar</div>
-<div class="feature-desc">Penjelasan dan latihan bertahap</div>
-</div>
-</div>
-<div class="feature-item" onclick="selectFeature('voice')">
-<div class="feature-icon">🎙️</div>
-<div class="feature-text">
-<div class="feature-name">Percakapan suara</div>
-<div class="feature-desc">Gunakan suara untuk bertanya</div>
-</div>
-</div>
+<div class="feature-item" onclick="selectFeature('auto')"><div class="feature-icon">🧭</div><div class="feature-text"><div class="feature-name">Auto Skill Router</div><div class="feature-desc">Pilih skill otomatis sesuai permintaan</div></div></div>
+<div class="feature-item" onclick="selectFeature('code')"><div class="feature-icon">💻</div><div class="feature-text"><div class="feature-name">Advanced Coding</div><div class="feature-desc">HTML, CSS, JavaScript, Python & debug</div></div></div>
+<div class="feature-item" onclick="selectFeature('creator')"><div class="feature-icon">📦</div><div class="feature-text"><div class="feature-name">File Creator</div><div class="feature-desc">Ekspor HTML, Python, TXT, CSV, JSON</div></div></div>
+<div class="feature-item" onclick="selectFeature('finance')"><div class="feature-icon">📈</div><div class="feature-text"><div class="feature-name">Financial Analyst</div><div class="feature-desc">Laba-rugi, neraca & analisis keuangan</div></div></div>
+<div class="feature-item" onclick="selectFeature('web')"><div class="feature-icon">🌐</div><div class="feature-text"><div class="feature-name">Web Research</div><div class="feature-desc">Riset informasi dan referensi sumber</div></div></div>
+<div class="feature-item" onclick="selectFeature('document')"><div class="feature-icon">📄</div><div class="feature-text"><div class="feature-name">Document Intelligence</div><div class="feature-desc">Baca, ringkas & analisis dokumen</div></div></div>
+<div class="feature-item" onclick="selectFeature('prompt')"><div class="feature-icon">✨</div><div class="feature-text"><div class="feature-name">Prompt Engineering</div><div class="feature-desc">Susun prompt AI yang lebih efektif</div></div></div>
+<div class="feature-item" onclick="selectFeature('context')"><div class="feature-icon">🧠</div><div class="feature-text"><div class="feature-name">Context Management</div><div class="feature-desc">Kelola konteks percakapan 12.000 karakter</div></div></div>
+<div class="feature-item" onclick="selectFeature('expert')"><div class="feature-icon">🎓</div><div class="feature-text"><div class="feature-name">Expert Mode</div><div class="feature-desc">Jawaban terstruktur dan mendalam</div></div></div>
+<div class="feature-item" onclick="selectFeature('image')"><div class="feature-icon">🎨</div><div class="feature-text"><div class="feature-name">Generasi gambar</div><div class="feature-desc">Buat gambar dari deskripsi</div></div></div>
+<div class="feature-item" onclick="selectFeature('voice')"><div class="feature-icon">🎙️</div><div class="feature-text"><div class="feature-name">Percakapan suara</div><div class="feature-desc">Gunakan suara untuk bertanya</div></div></div>
 <!-- ===== RUANG KERJA ===== -->
 <div class="section-title">▣ Ruang Kerja</div>
 <div class="chat-item active">Percakapan</div>
@@ -836,7 +791,7 @@
 <!-- INPUT AREA -->
 <div class="input-container">
 <div class="input-wrapper">
-<textarea class="input-box" id="messageInput" oninput="autoResize(this); toggleSendBtn()" onkeydown="handleKey(event)" placeholder="Tanya apa saja..." rows="1"></textarea>
+<textarea class="input-box" id="messageInput" maxlength="10000" oninput="autoResize(this); toggleSendBtn()" onkeydown="handleKey(event)" placeholder="Tanya apa saja..." rows="1"></textarea>
 <div class="input-actions">
 <div class="input-tools">
 <button class="tool-btn" title="Lampirkan file" onclick="openAttachment()">📎</button>
@@ -862,6 +817,8 @@
   let chatMessages = [];
   let selectedFiles = [];
   let isSending = false;
+  const MAX_CONTEXT_CHARS = 12000;
+  let selectedSkill = 'auto';
 
   function autoResize(el) {
     el.style.height = 'auto';
@@ -878,20 +835,66 @@
       sendMessage();
     }
   }
+  const SKILL_CONFIG = {
+    auto: {label:'Auto Skill Router', prompt:'Kenali maksud pengguna, pilih keahlian paling relevan secara otomatis, lalu jawab langsung.'},
+    code: {label:'Advanced Coding', prompt:'Bertindak sebagai asisten pemrograman. Buat kode HTML, CSS, JavaScript, atau Python yang lengkap dan dapat dijalankan. Debug secara sistematis dan jelaskan perubahan penting.'},
+    creator: {label:'File Creator', prompt:'Jika pengguna meminta file, hasilkan isi file yang lengkap dalam code fence dengan label bahasa/format yang tepat (html, python, txt, csv, atau json). Jangan mengaku telah membuat file unduhan jika belum tersedia.'},
+    finance: {label:'Financial Analyst', prompt:'Analisis data keuangan secara terstruktur: asumsi, pendapatan, biaya, laba-rugi, neraca, arus kas, rasio, risiko, dan kesimpulan. Jangan mengarang angka; tandai data yang belum tersedia.'},
+    web: {label:'Web Research', prompt:'Lakukan riset web jika backend menyediakan pencarian. Sertakan tautan/referensi dan tanggal sumber; bedakan fakta sumber dengan analisis.'},
+    document: {label:'Document Intelligence', prompt:'Analisis dokumen/lampiran berdasarkan isi sumber. Ringkas struktur, poin penting, dan temuan; jangan mengarang isi yang tidak terbaca.'},
+    prompt: {label:'Prompt Engineering', prompt:'Rancang prompt yang jelas, spesifik, memiliki konteks, batasan, format keluaran, dan kriteria keberhasilan.'},
+    context: {label:'Context Management', prompt:'Jaga konteks tetap ringkas. Prioritaskan instruksi terbaru dan fakta penting; nyatakan bila konteks lama tidak tersedia.'},
+    expert: {label:'Expert Mode', prompt:'Gunakan mode ahli: jawaban terstruktur, mendalam, bernalar, menyebut asumsi, batasan, dan langkah praktis.'},
+    image: {label:'Generasi gambar', prompt:'Bantu menyusun deskripsi/prompt gambar. Jika generator gambar tidak tersedia di backend, jelaskan keterbatasannya.'},
+    voice: {label:'Percakapan suara', prompt:'Jawab dengan bahasa Indonesia yang natural dan mudah dipahami.'}
+  };
   function selectFeature(type) {
+    selectedSkill = SKILL_CONFIG[type] ? type : 'auto';
     const input = document.getElementById('messageInput');
-    const featureMap = {
-      web: 'Tolong cari dan rangkum informasi web terkini tentang: ',
-      image: 'Buat gambar sesuai deskripsi berikut. Jika kemampuan generasi gambar tersedia di backend, hasilkan gambar; jika tidak, jelaskan keterbatasannya: ',
-      file: 'Analisis file yang saya lampirkan dan jawab berdasarkan isi file. ',
-      data: 'Analisis data berikut, hitung insight penting dan sarankan visualisasi: ',
-      code: 'Bantu tulis, jelaskan, debug, atau perbaiki kode berikut. Berikan kode lengkap: ',
-      write: 'Bantu saya menyusun atau menyunting tulisan berikut: ',
-      learn: 'Ajari saya secara bertahap dengan penjelasan dan contoh tentang: ',
-      voice: 'Mode percakapan suara: tanggapi pertanyaan saya dengan bahasa yang natural: '
+    const status = document.getElementById('skillStatus');
+    if (status) status.textContent = '✦ Skill aktif: ' + SKILL_CONFIG[selectedSkill].label + ' · Batas konteks 12.000 karakter';
+    const prompts = {
+      auto:'', code:'Bantu buat atau perbaiki kode berikut. Berikan kode lengkap:\n',
+      creator:'Buatkan file dengan format yang saya minta. Isi/kebutuhan file:\n',
+      finance:'Analisis data keuangan berikut. Jangan mengarang angka:\n',
+      web:'Teliti topik berikut dan sertakan referensi sumber:\n',
+      document:'Analisis dokumen/lampiran berikut berdasarkan isi sumber:\n',
+      prompt:'Kembangkan prompt AI yang efektif untuk kebutuhan berikut:\n',
+      context:'Bantu ringkas dan kelola konteks percakapan berikut:\n',
+      expert:'Jawab dalam Expert Mode secara terstruktur dan mendalam:\n',
+      image:'Buat prompt gambar dari deskripsi berikut:\n',
+      voice:'Tanggapi pertanyaan saya dengan bahasa yang natural:\n'
     };
-    input.value = featureMap[type] || '';
+    input.value = prompts[selectedSkill] || '';
     input.focus(); autoResize(input); toggleSendBtn();
+  }
+  function detectSkill(message) {
+    if (selectedSkill !== 'auto') return selectedSkill;
+    const t = message.toLowerCase();
+    if (/\b(html|css|javascript|python|kode|coding|debug|error program|website|script)\b/.test(t)) return 'code';
+    if (/\b(file|unduh|download|csv|json|txt|buatkan.*(html|py))\b/.test(t)) return 'creator';
+    if (/\b(laba|rugi|neraca|keuangan|arus kas|modal|rasio keuangan)\b/.test(t)) return 'finance';
+    if (/\b(cari di web|riset|terbaru|referensi|sumber|berita)\b/.test(t)) return 'web';
+    if (/\b(dokumen|pdf|lampiran|ringkas file|analisis file)\b/.test(t)) return 'document';
+    if (/\b(prompt|instruksi untuk ai|prompt engineering)\b/.test(t)) return 'prompt';
+    if (/\b(ringkas konteks|riwayat|konteks percakapan)\b/.test(t)) return 'context';
+    if (/\b(analisis mendalam|mode ahli|expert mode)\b/.test(t)) return 'expert';
+    return 'auto';
+  }
+  function downloadTextFile(filename, content, mime='text/plain;charset=utf-8') {
+    const blob = new Blob([content], {type:mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=filename;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  function exportAssistantText(text) {
+    const blocks = [...text.matchAll(/```(html|python|py|javascript|js|css|json|csv|txt)?\s*\n([\s\S]*?)```/gi)];
+    if (!blocks.length) { downloadTextFile('ai-ghifari-jawaban.txt', text); return; }
+    const extMap={html:'html',python:'py',py:'py',javascript:'js',js:'js',css:'css',json:'json',csv:'csv',txt:'txt'};
+    blocks.forEach((m,i)=>{
+      const ext=extMap[(m[1]||'txt').toLowerCase()]||'txt';
+      downloadTextFile('ai-ghifari-'+(i+1)+'.'+ext,m[2],ext==='html'?'text/html;charset=utf-8':'text/plain;charset=utf-8');
+    });
   }
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1021,17 +1024,31 @@
     const welcome=area.querySelector('.welcome-container');if(welcome)welcome.remove();
     if(!currentChatId)currentChatId='chat_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);
     const fileContext=selectedFiles.map(f=>`\n\n[FILE: ${f.name} | ${f.type}]\n${f.content}`).join('');
-    const requestMessage=message+fileContext;
+    const skill = detectSkill(message);
+    const skillConfig = SKILL_CONFIG[skill] || SKILL_CONFIG.auto;
+    const skillStatus=document.getElementById('skillStatus');
+    if(skillStatus) skillStatus.textContent='✦ Skill terpilih: '+skillConfig.label+' · Menyiapkan konteks…';
+    const availableForFiles = Math.max(0, MAX_CONTEXT_CHARS - message.length - 1500);
+    const boundedFileContext = fileContext.length > availableForFiles
+      ? fileContext.slice(0, availableForFiles) + '\\n[Isi lampiran dipotong agar konteks tidak melewati batas.]'
+      : fileContext;
+    const requestMessage='[SKILL: '+skillConfig.label+']\\n'+skillConfig.prompt+'\\n\\nPermintaan pengguna: '+message+boundedFileContext;
     chatMessages.push({role:'user',content:message,files:selectedFiles.map(f=>f.name),timestamp:Date.now()});
     renderMessage('user',message,selectedFiles.length?'Lampiran: '+selectedFiles.map(f=>f.name).join(', '):'');
     selectedFiles=[];updateAttachmentTray();
     input.value='';input.style.height='auto';isSending=true;toggleSendBtn();
     const pending=renderMessage('assistant','AI©el-ghifari sedang berpikir…');
     try{
-      const history=chatMessages.slice(-12).map(m=>({role:m.role,content:m.content}));
+      let budget = Math.max(0, MAX_CONTEXT_CHARS - requestMessage.length);
+      const history=[];
+      for (const m of chatMessages.slice(-12).reverse()) {
+        const item={role:m.role,content:String(m.content||'')};
+        const cost=item.content.length;
+        if(cost<=budget){history.unshift(item);budget-=cost;}
+      }
       const response=await fetch(EL_GHIFARI_API_BASE+'/api/chat',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({message:requestMessage,history:history,conversation:history})
+        body:JSON.stringify({message:requestMessage,history:history,conversation:history,skill:skill,mode:skill==='expert'?'expert':'standard',context_limit:MAX_CONTEXT_CHARS})
       });
       let data={};try{data=await response.json();}catch(e){}
       if(!response.ok)throw new Error(data.error||data.detail||('HTTP '+response.status));
@@ -1042,12 +1059,17 @@
     }catch(err){
       pending.remove();
       let detail=err.message||'Koneksi gagal';
-      if(err instanceof TypeError)detail='Tidak dapat menghubungi backend. Periksa backend PythonAnywhere, koneksi internet, dan izin CORS.';
+      if(err instanceof TypeError)detail='Koneksi ke server gagal. Periksa internet, status server PythonAnywhere, URL API, dan konfigurasi CORS.';
+      else if(String(detail).includes('HTTP 401') || String(detail).includes('HTTP 403')) detail='Server menolak akses (autentikasi/izin). Periksa API key atau aturan akses backend.';
+      else if(String(detail).includes('HTTP 404')) detail='Endpoint /api/chat tidak ditemukan. Pastikan rute API backend benar.';
+      else if(String(detail).includes('HTTP 429')) detail='Server sedang membatasi jumlah permintaan. Tunggu sebentar lalu coba lagi.';
+      else if(String(detail).includes('HTTP 5')) detail='Terjadi gangguan pada server backend. Periksa log aplikasi PythonAnywhere.';
+
       const msg='Maaf, chat AI belum berhasil tersambung. '+detail+'\n\nBackend yang digunakan: '+EL_GHIFARI_API_BASE+'/api/chat';
       renderMessage('assistant',msg);
       chatMessages.push({role:'assistant',content:msg,timestamp:Date.now()});saveCurrentChat();
       console.error('EL-GHIFARI backend error:',err);
-    }finally{isSending=false;toggleSendBtn();}
+    }finally{isSending=false;toggleSendBtn(); if(skillStatus)skillStatus.textContent='🧭 Auto Skill Router aktif · Konteks maksimal 12.000 karakter';}
   }
   renderHistory();
 </script>
