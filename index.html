@@ -763,6 +763,30 @@
 <div class="feature-item" onclick="selectFeature('prompt')"><div class="feature-icon">✨</div><div class="feature-text"><div class="feature-name">Prompt Engineering</div><div class="feature-desc">Menyusun prompt AI yang efektif</div></div></div>
 <div class="feature-item" onclick="selectFeature('image')"><div class="feature-icon">🖼️</div><div class="feature-text"><div class="feature-name">Generasi Gambar</div><div class="feature-desc">Menyusun kebutuhan gambar</div></div></div>
 <div class="feature-item" onclick="selectFeature('voice')"><div class="feature-icon">🎙️</div><div class="feature-text"><div class="feature-name">Percakapan Suara</div><div class="feature-desc">Dukungan input suara browser</div></div></div>
+
+<!-- ===== 20 KEMAMPUAN BARU VERSI 2.0 ===== -->
+<div class="section-title">✧ Skill Tambahan v2.0</div>
+<div class="feature-item" onclick="selectFeature('vision')"><div class="feature-icon">👁️</div><div class="feature-text"><div class="feature-name">Vision Intelligence</div><div class="feature-desc">Analisis gambar jika backend vision aktif</div></div></div>
+<div class="feature-item" onclick="selectFeature('pdf')"><div class="feature-icon">📕</div><div class="feature-text"><div class="feature-name">PDF &amp; Office Expert</div><div class="feature-desc">Dokumen PDF, Word, dan presentasi</div></div></div>
+<div class="feature-item" onclick="selectFeature('ocr')"><div class="feature-icon">🔤</div><div class="feature-text"><div class="feature-name">OCR Intelligence</div><div class="feature-desc">Ekstraksi teks dari hasil pindai</div></div></div>
+<div class="feature-item" onclick="selectFeature('database')"><div class="feature-icon">🗄️</div><div class="feature-text"><div class="feature-name">Database Engineer</div><div class="feature-desc">SQL, skema, query, dan optimasi</div></div></div>
+<div class="feature-item" onclick="selectFeature('spreadsheet')"><div class="feature-icon">📊</div><div class="feature-text"><div class="feature-name">Spreadsheet Expert</div><div class="feature-desc">Excel, formula, pivot, dan CSV</div></div></div>
+<div class="feature-item" onclick="selectFeature('presentation')"><div class="feature-icon">📽️</div><div class="feature-text"><div class="feature-name">Presentation Designer</div><div class="feature-desc">Struktur slide dan materi presentasi</div></div></div>
+<div class="feature-item" onclick="selectFeature('audio')"><div class="feature-icon">🎧</div><div class="feature-text"><div class="feature-name">Audio Intelligence</div><div class="feature-desc">Analisis transkrip dan kebutuhan audio</div></div></div>
+<div class="feature-item" onclick="selectFeature('video')"><div class="feature-icon">🎬</div><div class="feature-text"><div class="feature-name">Video Intelligence</div><div class="feature-desc">Analisis naskah, adegan, dan video</div></div></div>
+<div class="feature-item" onclick="selectFeature('tts')"><div class="feature-icon">🔊</div><div class="feature-text"><div class="feature-name">Text-to-Speech</div><div class="feature-desc">Membacakan jawaban melalui browser</div></div></div>
+<div class="feature-item" onclick="selectFeature('imagegen')"><div class="feature-icon">🪄</div><div class="feature-text"><div class="feature-name">Image Generator Engine</div><div class="feature-desc">Prompt dan alur generasi gambar</div></div></div>
+<div class="feature-item" onclick="selectFeature('search')"><div class="feature-icon">🌍</div><div class="feature-text"><div class="feature-name">Web Search Engine</div><div class="feature-desc">Riset web jika endpoint pencarian tersedia</div></div></div>
+<div class="feature-item" onclick="selectFeature('maps')"><div class="feature-icon">📍</div><div class="feature-text"><div class="feature-name">Maps &amp; Geolocation</div><div class="feature-desc">Analisis alamat dan lokasi berbasis sumber</div></div></div>
+<div class="feature-item" onclick="selectFeature('email')"><div class="feature-icon">✉️</div><div class="feature-text"><div class="feature-name">Email Assistant</div><div class="feature-desc">Draf, balasan, dan ringkasan email</div></div></div>
+<div class="feature-item" onclick="selectFeature('cloud')"><div class="feature-icon">☁️</div><div class="feature-text"><div class="feature-name">Cloud Storage Manager</div><div class="feature-desc">Rencana pengelolaan file cloud</div></div></div>
+<div class="feature-item" onclick="selectFeature('calendar')"><div class="feature-icon">🗓️</div><div class="feature-text"><div class="feature-name">Calendar &amp; Reminder</div><div class="feature-desc">Agenda dan rancangan pengingat</div></div></div>
+<div class="feature-item" onclick="selectFeature('dataviz')"><div class="feature-icon">📈</div><div class="feature-text"><div class="feature-name">Data Visualization</div><div class="feature-desc">Grafik, tren, dan interpretasi data</div></div></div>
+<div class="feature-item" onclick="selectFeature('ecommerce')"><div class="feature-icon">🛒</div><div class="feature-text"><div class="feature-name">E-commerce Intelligence</div><div class="feature-desc">Katalog, toko, dan strategi penjualan</div></div></div>
+<div class="feature-item" onclick="selectFeature('bi')"><div class="feature-icon">🧭</div><div class="feature-text"><div class="feature-name">Business Intelligence</div><div class="feature-desc">KPI, dashboard, dan insight bisnis</div></div></div>
+<div class="feature-item" onclick="selectFeature('administration')"><div class="feature-icon">🏛️</div><div class="feature-text"><div class="feature-name">Indonesian Administration Expert</div><div class="feature-desc">Surat dan administrasi Indonesia</div></div></div>
+<div class="feature-item" onclick="selectFeature('docgen')"><div class="feature-icon">📝</div><div class="feature-text"><div class="feature-name">Document Generator</div><div class="feature-desc">Draf dokumen siap disalin atau diekspor</div></div></div>
+
 <!-- ===== RUANG KERJA ===== -->
 <div class="section-title">▣ Ruang Kerja</div>
 <div class="chat-item active">Percakapan</div>
@@ -792,6 +816,8 @@
 <span style="font-size: 10px;">▼</span>
 </div>
 <div class="header-actions">
+<button class="icon-btn" onclick="speakLastAnswer()" title="Bacakan jawaban">🔊</button>
+<button class="icon-btn" onclick="stopSpeaking()" title="Hentikan suara">⏹</button>
 <button class="icon-btn" title="Bagikan">🔗</button>
 <button class="icon-btn" onclick="toggleTheme()" title="Mode">🌙</button>
 <button class="icon-btn" onclick="clearChat()" title="Hapus">🗑️</button>
@@ -809,7 +835,7 @@
 </div>
 <!-- INPUT AREA -->
 <div class="input-container">
-<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 Auto Skill Router aktif · Konteks maksimal 16.000 karakter</div>
+<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 AI©el-ghifari v2.0 · 50 profil skill · Konteks maksimal 16.000 karakter</div>
 <div class="input-wrapper">
 <textarea class="input-box" id="messageInput" maxlength="10000" oninput="autoResize(this); toggleSendBtn()" onkeydown="handleKey(event)" placeholder="Tanya apa saja..." rows="1"></textarea>
 <div class="input-actions">
@@ -885,7 +911,27 @@
     context: {label:'Context Management', prompt:'Jaga konteks tetap ringkas. Prioritaskan instruksi terbaru dan fakta penting; nyatakan bila konteks lama tidak tersedia.'},
     expert: {label:'Expert Mode', prompt:'Gunakan mode ahli: jawaban terstruktur, mendalam, bernalar, menyebut asumsi, batasan, dan langkah praktis.'},
     image: {label:'Generasi gambar', prompt:'Bantu menyusun deskripsi/prompt gambar. Jika generator gambar tidak tersedia di backend, jelaskan keterbatasannya.'},
-    voice: {label:'Percakapan suara', prompt:'Jawab dengan bahasa Indonesia yang natural dan mudah dipahami.'}
+    voice: {label:'Percakapan suara', prompt:'Jawab dengan bahasa Indonesia yang natural dan mudah dipahami.'},
+    vision: {label:'Vision Intelligence', prompt:'Analisis gambar hanya berdasarkan gambar yang benar-benar diterima backend vision. Uraikan objek, teks yang terlihat, konteks, dan ketidakpastian. Jika gambar tidak diteruskan sebagai input visual, katakan bahwa gambar belum dapat dianalisis; jangan menebak.'},
+    pdf: {label:'PDF & Office Expert', prompt:'Bantu membaca, menyusun, dan memeriksa PDF, DOCX, XLSX, serta PPTX. Gunakan hanya teks/isi file yang benar-benar tersedia. Jika file biner belum diekstrak backend, jelaskan bahwa ekstraksi diperlukan.'},
+    ocr: {label:'OCR Intelligence', prompt:'Ekstrak dan rapikan teks dari gambar/pindaian hanya jika hasil OCR atau konten visual tersedia. Pertahankan angka, ejaan, tabel, dan tandai bagian yang tidak terbaca.'},
+    database: {label:'Database Engineer', prompt:'Rancang database relasional/non-relasional, ERD tekstual, skema, SQL, indeks, migrasi, backup, keamanan, dan optimasi. Sertakan contoh yang dapat diuji.'},
+    spreadsheet: {label:'Spreadsheet Expert', prompt:'Bantu Excel/Google Sheets/CSV: formula, validasi, pivot, pembersihan data, lookup, dan rekonsiliasi. Jangan mengarang isi workbook yang tidak terbaca.'},
+    presentation: {label:'Presentation Designer', prompt:'Susun presentasi profesional dengan tujuan, alur slide, judul, poin inti, catatan pembicara, dan arahan visual. Hindari slide terlalu padat.'},
+    audio: {label:'Audio Intelligence', prompt:'Analisis audio berdasarkan transkrip atau metadata yang benar-benar tersedia. Bantu merapikan transkrip, merangkum pembicaraan, dan menandai pembicara bila informasinya cukup.'},
+    video: {label:'Video Intelligence', prompt:'Analisis video berdasarkan transkrip, deskripsi adegan, atau frame yang benar-benar tersedia. Buat ringkasan, urutan adegan, dan naskah; jangan mengaku telah menonton file yang tidak dapat dibaca.'},
+    tts: {label:'Text-to-Speech', prompt:'Jawab dengan kalimat yang enak dibacakan, natural, dan tidak terlalu panjang. Pembacaan suara dilakukan oleh fitur suara browser bila tersedia.'},
+    imagegen: {label:'Image Generator Engine', prompt:'Rancang brief dan prompt gambar yang rinci: subjek, komposisi, gaya, pencahayaan, warna, rasio, dan hal yang harus dihindari. Jangan mengklaim gambar sudah dibuat jika generator tidak terhubung.'},
+    search: {label:'Web Search Engine', prompt:'Lakukan pencarian web hanya jika backend memiliki endpoint/tool pencarian aktif. Sertakan URL dan tanggal sumber yang benar-benar diperoleh; jika tidak tersedia, nyatakan perlu integrasi pencarian.'},
+    maps: {label:'Maps & Geolocation', prompt:'Analisis lokasi dengan alamat, koordinat, atau tautan peta yang diberikan dan sumber geospasial yang tersedia. Jangan menebak alamat lengkap atau mengklaim lokasi terverifikasi tanpa data.'},
+    email: {label:'Email Assistant', prompt:'Buat draf email profesional, subjek, balasan, dan ringkasan. Jangan mengirim email atau mengklaim terkirim tanpa konektor email yang benar-benar terhubung.'},
+    cloud: {label:'Cloud Storage Manager', prompt:'Rancang struktur folder, sinkronisasi, kebijakan akses, retensi, dan backup cloud. Jangan mengklaim mengunggah, menghapus, atau menyinkronkan file tanpa konektor aktif.'},
+    calendar: {label:'Calendar & Reminder', prompt:'Susun agenda, jadwal, dan pengingat dengan tanggal, zona waktu, dan pengulangan yang jelas. Jangan mengklaim acara dibuat tanpa integrasi kalender/pengingat aktif.'},
+    dataviz: {label:'Data Visualization', prompt:'Pilih visualisasi yang tepat untuk data tersedia, jelaskan sumbu, satuan, tren, anomali, dan keterbatasan. Jangan membuat angka atau grafik dari data yang tidak ada.'},
+    ecommerce: {label:'E-commerce Intelligence', prompt:'Analisis katalog, deskripsi produk, harga, konversi, layanan pelanggan, dan strategi marketplace berdasarkan data yang diberikan.'},
+    bi: {label:'Business Intelligence', prompt:'Ubah data bisnis menjadi KPI, metrik, dashboard, segmentasi, tren, dan rekomendasi yang dapat ditindaklanjuti. Pisahkan fakta dari interpretasi.'},
+    administration: {label:'Indonesian Administration Expert', prompt:'Bantu menyusun surat, berita acara, daftar hadir, laporan, administrasi desa/instansi, dan format dokumen Indonesia. Verifikasi aturan terbaru bila sumber hukum diperlukan.'},
+    docgen: {label:'Document Generator', prompt:'Susun dokumen lengkap dengan struktur, judul, tabel, lampiran, dan format siap disalin. Nyatakan format ekspor yang dapat dilakukan dan jangan mengklaim file terlampir jika belum dibuat.'}
   };
   function selectFeature(type) {
     selectedSkill = SKILL_CONFIG[type] ? type : 'auto';
@@ -898,6 +944,26 @@
   function detectSkill(message) {
     if (selectedSkill !== 'auto') return selectedSkill;
     const t = message.toLowerCase();
+    if (/\b(ocr|scan teks|hasil pindai|baca tulisan di gambar)\b/.test(t)) return 'ocr';
+    if (/\b(pdf|docx|xlsx|pptx|word|powerpoint|office)\b/.test(t)) return 'pdf';
+    if (/\b(database|sql|query sql|skema tabel|erd|migrasi database)\b/.test(t)) return 'database';
+    if (/\b(excel|spreadsheet|google sheets|rumus excel|pivot|csv)\b/.test(t)) return 'spreadsheet';
+    if (/\b(slide|presentasi|power point|bahan paparan)\b/.test(t)) return 'presentation';
+    if (/\b(audio|rekaman|transkrip suara|podcast)\b/.test(t)) return 'audio';
+    if (/\b(video|adegan|storyboard|naskah video)\b/.test(t)) return 'video';
+    if (/\b(bacakan|text to speech|tts|suara jawaban)\b/.test(t)) return 'tts';
+    if (/\b(gambar|ilustrasi|image generation|buat gambar)\b/.test(t)) return 'imagegen';
+    if (/\b(cari di internet|search web|pencarian web|google search)\b/.test(t)) return 'search';
+    if (/\b(peta|maps|koordinat|geolokasi|alamat lokasi)\b/.test(t)) return 'maps';
+    if (/\b(email|surel|balas email)\b/.test(t)) return 'email';
+    if (/\b(google drive|onedrive|dropbox|cloud storage|penyimpanan awan)\b/.test(t)) return 'cloud';
+    if (/\b(kalender|calendar|pengingat|reminder)\b/.test(t)) return 'calendar';
+    if (/\b(grafik|visualisasi data|diagram data|chart)\b/.test(t)) return 'dataviz';
+    if (/\b(e-commerce|marketplace|toko online|katalog produk)\b/.test(t)) return 'ecommerce';
+    if (/\b(kpi|business intelligence|dashboard bisnis|indikator kinerja)\b/.test(t)) return 'bi';
+    if (/\b(surat desa|berita acara|daftar hadir|administrasi desa|surat resmi)\b/.test(t)) return 'administration';
+    if (/\b(buat dokumen|generator dokumen|susun dokumen|template dokumen)\b/.test(t)) return 'docgen';
+    if (/\b(analisis gambar|lihat gambar|apa isi foto|identifikasi objek)\b/.test(t)) return 'vision';
     if (/\b(harga tanah|harga lahan|gudang|pabrik|kawasan industri|properti industri|buyer properti|lokasi industri)\b/.test(t)) return 'property';
     if (/\b(api|endpoint|backend|database|autentikasi|cors|integrasi layanan)\b/.test(t)) return 'api';
     if (/\b(test case|testing|uji aplikasi|qa|bug|validasi aplikasi)\b/.test(t)) return 'qa';
@@ -1052,6 +1118,16 @@
     const mention=prompt('Tambahkan konteks mention (contoh: @dokumen, @kode, @web):','@konteks ');
     if(mention){input.value+=(input.value?' ':'')+mention;input.focus();autoResize(input);toggleSendBtn();}
   }
+  function speakLastAnswer(){
+    if(!('speechSynthesis' in window)){alert('Text-to-Speech tidak didukung browser ini.');return;}
+    const last=[...chatMessages].reverse().find(m=>m.role==='assistant' && m.content);
+    if(!last){alert('Belum ada jawaban yang dapat dibacakan.');return;}
+    window.speechSynthesis.cancel();
+    const clean=String(last.content).replace(/```[\s\S]*?```/g,'Kode terlampir.').replace(/https?:\/\/\S+/g,'tautan').replace(/[*_#>`]/g,' ').slice(0,12000);
+    const utterance=new SpeechSynthesisUtterance(clean); utterance.lang='id-ID'; utterance.rate=1; utterance.pitch=1;
+    window.speechSynthesis.speak(utterance);
+  }
+  function stopSpeaking(){if('speechSynthesis' in window)window.speechSynthesis.cancel();}
   function startVoiceInput(){
     const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SpeechRecognition){alert('Input suara tidak didukung browser ini. Coba Google Chrome terbaru.');return;}
@@ -1113,7 +1189,7 @@
       renderMessage('assistant',msg);
       chatMessages.push({role:'assistant',content:msg,timestamp:Date.now()});saveCurrentChat();
       console.error('EL-GHIFARI backend error:',err);
-    }finally{isSending=false;toggleSendBtn(); if(skillStatus)skillStatus.textContent='🧭 Auto Skill Router aktif · Konteks maksimal 16.000 karakter';}
+    }finally{isSending=false;toggleSendBtn(); if(skillStatus)skillStatus.textContent='🧭 AI©el-ghifari v2.0 · 50 profil skill · Konteks maksimal 16.000 karakter';}
   }
   renderHistory();
 </script>
