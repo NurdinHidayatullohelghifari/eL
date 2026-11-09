@@ -1043,6 +1043,32 @@
   function getStoredChats() {
     try { return JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]'); } catch(e) { return []; }
   }
+  function buildSmartMemory(prompt, excludeChatId) {
+    // Memori lokal hanya menggunakan riwayat yang sudah tersimpan di browser ini.
+    // Tidak membuat panggilan Groq tambahan dan tidak mengirim seluruh arsip chat.
+    const chats=getStoredChats().filter(c=>c && c.id!==excludeChatId && Array.isArray(c.messages));
+    if(!chats.length) return '';
+    const stop=new Set(['yang','dan','atau','dengan','untuk','dari','pada','saya','anda','kamu','ini','itu','bisa','tolong','buat','bagaimana','apakah','the','and','for']);
+    const terms=String(prompt||'').toLowerCase().match(/[a-z0-9]{3,}/g)||[];
+    const keywords=[...new Set(terms.filter(t=>!stop.has(t)))].slice(0,18);
+    const referential=/\b(tadi|sebelumnya|yang lalu|percakapan|pembicaraan|ingat|sudah saya|pernah saya)\b/i.test(prompt||'');
+    const candidates=[];
+    chats.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).forEach(chat=>{
+      const msgs=chat.messages.filter(m=>m && (m.role==='user'||m.role==='assistant'));
+      for(let i=0;i<msgs.length;i++){
+        if(msgs[i].role!=='user') continue;
+        const userText=String(msgs[i].content||'').slice(0,1000);
+        const answer=String(msgs[i+1]?.role==='assistant'?msgs[i+1].content:'').slice(0,500);
+        const hay=(userText+' '+answer).toLowerCase();
+        const score=keywords.reduce((n,k)=>n+(hay.includes(k)?1:0),0);
+        if(score>0 || (referential && i>=Math.max(0,msgs.length-4))) {
+          candidates.push({score,updatedAt:chat.updatedAt||0,userText,answer,title:chat.title||'Percakapan sebelumnya'});
+        }
+      }
+    });
+    candidates.sort((a,b)=>b.score-a.score || b.updatedAt-a.updatedAt);
+    return candidates.slice(0,2).map((p,i)=>`${i+1}. Topik: ${p.title}\nPengguna: ${p.userText}\nRespons terdahulu: ${p.answer}`).join('\n\n').slice(0,1000);
+  }
   function saveCurrentChat() {
     if (!currentChatId || !chatMessages.length) return;
     const chats=getStoredChats();
@@ -1157,7 +1183,7 @@
     if(!currentChatId)currentChatId='chat_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);
     const pendingFiles = selectedFiles.slice();
     const imageFile = pendingFiles.find(f => f.type && f.type.startsWith('image/') && String(f.content).startsWith('data:image/'));
-    const fileContext = pendingFiles.filter(f => f !== imageFile).map(f=>`\n\n[FILE: ${f.name} | ${f.type}]\n${f.content}`).join('');
+    const fileContext = pendingFiles.filter(f => f !== imageFile && !(f.type && f.type.startsWith('image/'))).map(f=>`\n\n[FILE: ${f.name} | ${f.type}]\n${f.content}`).join('');
     const skill = detectSkill(message);
     const skillConfig = SKILL_CONFIG[skill] || SKILL_CONFIG.auto;
     const skillStatus=document.getElementById('skillStatus');
@@ -1166,7 +1192,9 @@
     const boundedFileContext = fileContext.length > availableForFiles
       ? fileContext.slice(0, availableForFiles) + '\n[Isi lampiran dipotong agar konteks tidak melewati batas.]'
       : fileContext;
-    const requestMessage='[SKILL: '+skillConfig.label+']\n'+skillConfig.prompt+'\n\nPermintaan pengguna: '+message+boundedFileContext;
+    const memoryContext=buildSmartMemory(message,currentChatId);
+    const adaptiveGuide='\n\n[ADAPTIVE CONVERSATION] Jawab secara natural. Jika tujuan jelas, langsung bantu. Jika ada satu informasi penting yang belum tersedia dan memengaruhi rekomendasi, ajukan hanya satu pertanyaan paling penting. Jangan mengulang pertanyaan yang sudah dijawab dalam riwayat atau memori.';
+    const requestMessage='[SKILL: '+skillConfig.label+']\n'+skillConfig.prompt+adaptiveGuide+'\n\nPermintaan pengguna: '+message+boundedFileContext;
     chatMessages.push({role:'user',content:message,files:selectedFiles.map(f=>f.name),timestamp:Date.now()});
     renderMessage('user',message,selectedFiles.length?'Lampiran: '+selectedFiles.map(f=>f.name).join(', '):'');
     selectedFiles=[];updateAttachmentTray();
@@ -1175,14 +1203,14 @@
     try{
       let budget = Math.max(0, MAX_CONTEXT_CHARS - requestMessage.length);
       const history=[];
-      for (const m of chatMessages.slice(-12).reverse()) {
+      for (const m of chatMessages.slice(0,-1).slice(-10).reverse()) {
         const item={role:m.role,content:String(m.content||'')};
         const cost=item.content.length;
         if(cost<=budget){history.unshift(item);budget-=cost;}
       }
       const response=await fetch(EL_GHIFARI_API_BASE+'/api/chat',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({message:requestMessage,history:history,skill:skill,mode:skill==='expert'?'expert':'standard',context_limit:MAX_CONTEXT_CHARS,...(imageFile?{imageData:imageFile.content,imageMime:imageFile.type}: {})})
+        body:JSON.stringify({message:requestMessage,history:history,memory_context:memoryContext,skill:skill,mode:skill==='expert'?'expert':'standard',context_limit:MAX_CONTEXT_CHARS,...(imageFile?{imageData:imageFile.content,imageMime:imageFile.type}: {})})
       });
       let data={};try{data=await response.json();}catch(e){}
       if(!response.ok)throw new Error(data.error||data.detail||('HTTP '+response.status));
