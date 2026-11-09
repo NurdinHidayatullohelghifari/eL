@@ -835,7 +835,7 @@
 </div>
 <!-- INPUT AREA -->
 <div class="input-container">
-<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 AI©el-ghifari v2.0 · 50 profil skill · Konteks maksimal 16.000 karakter</div>
+<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 AI©el-ghifari v2.0 · 50 profil skill · Konteks maksimal 6.000 karakter</div>
 <div class="input-wrapper">
 <textarea class="input-box" id="messageInput" maxlength="10000" oninput="autoResize(this); toggleSendBtn()" onkeydown="handleKey(event)" placeholder="Tanya apa saja..." rows="1"></textarea>
 <div class="input-actions">
@@ -863,8 +863,20 @@
   let chatMessages = [];
   let selectedFiles = [];
   let isSending = false;
-  const MAX_CONTEXT_CHARS = 16000;
+  const MAX_CONTEXT_CHARS = 6000;
   let selectedSkill = 'auto';
+
+  async function refreshQuotaStatus(){
+    const status=document.getElementById('skillStatus');
+    if(!status)return;
+    try{
+      const response=await fetch(EL_GHIFARI_API_BASE+'/api/usage',{method:'GET',cache:'no-store'});
+      if(!response.ok)return;
+      const data=await response.json();
+      const q=data.quota||{};
+      status.textContent='🧭 AI©el-ghifari v2.0 · Kuota lokal: '+(q.daily_calls_used||0)+'/'+(q.daily_calls_limit||10)+' panggilan hari ini · '+(q.monthly_calls_used||0)+'/'+(q.monthly_calls_limit||150)+' per bulan (UTC)';
+    }catch(e){ /* Keep the existing status if quota endpoint is temporarily unreachable. */ }
+  }
 
   function autoResize(el) {
     el.style.height = 'auto';
@@ -1089,7 +1101,7 @@
     const files=Array.from(fileList||[]);
     for(const f of files){
       try{
-        if(f.size>12*1024*1024){alert('File '+f.name+' melebihi batas 12 MB.');continue;}
+        if(f.size>2*1024*1024){alert('File '+f.name+' melebihi batas 2 MB pada mode hemat kuota.');continue;}
         let content='';
         if(f.type.startsWith('text/') || /\.(txt|md|csv|json|html|xml|js|py|css)$/i.test(f.name)){
           content=await f.text();
@@ -1143,7 +1155,9 @@
     const area=document.getElementById('chatArea');
     const welcome=area.querySelector('.welcome-container');if(welcome)welcome.remove();
     if(!currentChatId)currentChatId='chat_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);
-    const fileContext=selectedFiles.map(f=>`\n\n[FILE: ${f.name} | ${f.type}]\n${f.content}`).join('');
+    const pendingFiles = selectedFiles.slice();
+    const imageFile = pendingFiles.find(f => f.type && f.type.startsWith('image/') && String(f.content).startsWith('data:image/'));
+    const fileContext = pendingFiles.filter(f => f !== imageFile).map(f=>`\n\n[FILE: ${f.name} | ${f.type}]\n${f.content}`).join('');
     const skill = detectSkill(message);
     const skillConfig = SKILL_CONFIG[skill] || SKILL_CONFIG.auto;
     const skillStatus=document.getElementById('skillStatus');
@@ -1168,7 +1182,7 @@
       }
       const response=await fetch(EL_GHIFARI_API_BASE+'/api/chat',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({message:requestMessage,history:history,conversation:history,skill:skill,mode:skill==='expert'?'expert':'standard',context_limit:MAX_CONTEXT_CHARS})
+        body:JSON.stringify({message:requestMessage,history:history,skill:skill,mode:skill==='expert'?'expert':'standard',context_limit:MAX_CONTEXT_CHARS,...(imageFile?{imageData:imageFile.content,imageMime:imageFile.type}: {})})
       });
       let data={};try{data=await response.json();}catch(e){}
       if(!response.ok)throw new Error(data.error||data.detail||('HTTP '+response.status));
@@ -1182,16 +1196,17 @@
       if(err instanceof TypeError)detail='Koneksi ke server gagal. Periksa internet, status server PythonAnywhere, URL API, dan konfigurasi CORS.';
       else if(String(detail).includes('HTTP 401') || String(detail).includes('HTTP 403')) detail='Server menolak akses (autentikasi/izin). Periksa API key atau aturan akses backend.';
       else if(String(detail).includes('HTTP 404')) detail='Endpoint /api/chat tidak ditemukan. Pastikan rute API backend benar.';
-      else if(String(detail).includes('HTTP 429')) detail='Server sedang membatasi jumlah permintaan. Tunggu sebentar lalu coba lagi.';
+      else if(String(detail).includes('HTTP 429') && !detail.toLowerCase().includes('kuota')) detail='Batas permintaan tercapai. Tunggu hingga kuota tersedia kembali.';
       else if(String(detail).includes('HTTP 5')) detail='Terjadi gangguan pada server backend. Periksa log aplikasi PythonAnywhere.';
 
       const msg='Maaf, chat AI belum berhasil tersambung. '+detail+'\n\nBackend yang digunakan: '+EL_GHIFARI_API_BASE+'/api/chat';
       renderMessage('assistant',msg);
       chatMessages.push({role:'assistant',content:msg,timestamp:Date.now()});saveCurrentChat();
       console.error('EL-GHIFARI backend error:',err);
-    }finally{isSending=false;toggleSendBtn(); if(skillStatus)skillStatus.textContent='🧭 AI©el-ghifari v2.0 · 50 profil skill · Konteks maksimal 16.000 karakter';}
+    }finally{isSending=false;toggleSendBtn(); refreshQuotaStatus(); if(skillStatus)skillStatus.textContent='🧭 AI©el-ghifari v2.0 · 50 profil skill · Konteks maksimal 6.000 karakter';}
   }
   renderHistory();
+  refreshQuotaStatus();
 </script>
 </body>
 </html>
