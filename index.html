@@ -710,6 +710,179 @@
 .sidebar .feature-desc { line-height: 1.35; }
 </style>
 
+
+<style id="el-ghifari-curved-glass-sidebar">
+/* Curved Glass Sidebar — visual-only layer; original assets and app logic remain intact. */
+:root {
+  --sidebar-glass: rgba(15, 19, 43, .78);
+  --sidebar-edge: rgba(125, 160, 255, .34);
+}
+body {
+  gap: 0;
+}
+.sidebar {
+  position: relative;
+  z-index: 5;
+  flex: 0 0 292px;
+  width: 292px;
+  height: calc(100vh - 24px);
+  margin: 12px 0 12px 12px;
+  border: 1px solid var(--sidebar-edge);
+  border-right: 1px solid rgba(105, 224, 255, .48);
+  border-radius: 0 38px 38px 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(67, 232, 255, .14), transparent 42%),
+    radial-gradient(ellipse at 100% 100%, rgba(190, 100, 255, .18), transparent 48%),
+    linear-gradient(155deg, rgba(26, 31, 67, .92), var(--sidebar-glass) 48%, rgba(10, 14, 34, .94));
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+  backdrop-filter: blur(24px) saturate(145%);
+  box-shadow:
+    12px 0 36px rgba(0, 0, 0, .26),
+    inset -1px 0 0 rgba(255,255,255,.08),
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 0 28px rgba(67, 232, 255, .07);
+  transition: transform .32s ease, box-shadow .32s ease, border-color .32s ease;
+}
+.sidebar::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.10), transparent 22% 76%, rgba(155,120,255,.08)),
+    linear-gradient(90deg, transparent 95%, rgba(67,232,255,.12));
+}
+.sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+.sidebar-header {
+  padding: 18px 16px 16px;
+  border-bottom-color: rgba(137, 166, 255, .20);
+}
+.logo-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,.035);
+  box-shadow: 0 0 18px rgba(67,232,255,.16), inset 0 0 0 1px rgba(255,255,255,.09);
+}
+/* Keep the original clown image file, pixels, and source URL unchanged. */
+.logo-icon .robot-svg {
+  object-fit: contain;
+  animation: none;
+}
+.new-chat-btn {
+  width: calc(100% - 28px);
+  margin: 14px;
+  min-height: 44px;
+  border-radius: 15px;
+  background: linear-gradient(115deg, rgba(67,232,255,.17), rgba(155,120,255,.20), rgba(255,101,184,.12));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 8px 24px rgba(0,0,0,.16);
+}
+.sidebar-scroll {
+  padding: 8px 13px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120,145,255,.55) transparent;
+}
+.sidebar .section-title {
+  margin: 16px 9px 10px;
+  letter-spacing: 1.15px;
+}
+.sidebar .feature-item {
+  min-height: 54px;
+  padding: 9px 10px;
+  border-radius: 14px;
+  border-color: transparent;
+}
+.sidebar .feature-item:hover {
+  background: linear-gradient(105deg, rgba(67,232,255,.11), rgba(155,120,255,.15));
+  border-color: rgba(115,157,255,.26);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 7px 18px rgba(0,0,0,.12);
+  transform: translateX(2px);
+}
+.sidebar .feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(67,232,255,.16), rgba(155,120,255,.20));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.sidebar .chat-item {
+  border-radius: 12px;
+  padding: 11px 13px;
+}
+.sidebar .history-section {
+  background: rgba(8, 12, 30, .18);
+  border-top-color: rgba(128,151,226,.20) !important;
+}
+.sidebar-footer {
+  min-height: 68px;
+  padding: 13px 16px;
+  background: linear-gradient(90deg, rgba(67,232,255,.045), rgba(155,120,255,.07));
+  border-top-color: rgba(128,151,226,.20);
+}
+.user-avatar {
+  border: 1px solid rgba(255,255,255,.24);
+}
+.main {
+  min-width: 0;
+}
+.main-header {
+  border-radius: 0 0 0 22px;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    bottom: 10px;
+    width: min(302px, calc(100vw - 28px));
+    height: auto;
+    margin: 0;
+    flex: none;
+    border-radius: 0 30px 30px 0;
+    transform: translateX(calc(-100% - 18px));
+    box-shadow: 18px 0 42px rgba(0,0,0,.42), 0 0 28px rgba(67,232,255,.10);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main-header {
+    border-radius: 0;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+@media (min-width: 769px) {
+  .sidebar {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .sidebar * {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+
+
+<style id="el-ghifari-sidebar-toggle-style">
+@media (max-width: 768px) {
+  #sidebarToggle { display: flex !important; flex: 0 0 36px; }
+  .main-header { justify-content: flex-start; gap: 8px; }
+  .main-header .model-selector { flex: 1; min-width: 0; }
+}
+</style>
+
 </head>
 <body>
 <!-- ===== SIDEBAR ===== -->
@@ -811,6 +984,7 @@
 <!-- ===== MAIN CONTENT ===== -->
 <main class="main">
 <div class="main-header">
+<button class="icon-btn" id="sidebarToggle" type="button" aria-label="Buka menu" aria-controls="sidebar" aria-expanded="false" onclick="toggleSidebar()" style="display:none">☰</button>
 <div class="model-selector">
 <span>AI©el-ghifari</span>
 <span style="font-size: 10px;">▼</span>
@@ -1236,5 +1410,33 @@
   renderHistory();
   refreshQuotaStatus();
 </script>
+
+<script id="el-ghifari-sidebar-toggle-script">
+function toggleSidebar(force) {
+  const sidebar = document.getElementById('sidebar');
+  const button = document.getElementById('sidebarToggle');
+  if (!sidebar) return;
+  const shouldOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', shouldOpen);
+  if (button) {
+    button.setAttribute('aria-expanded', String(shouldOpen));
+    button.setAttribute('aria-label', shouldOpen ? 'Tutup menu' : 'Buka menu');
+    button.textContent = shouldOpen ? '✕' : '☰';
+  }
+}
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') toggleSidebar(false);
+});
+document.addEventListener('click', function(event) {
+  if (window.innerWidth > 768) return;
+  const sidebar = document.getElementById('sidebar');
+  const button = document.getElementById('sidebarToggle');
+  if (sidebar && sidebar.classList.contains('open') &&
+      !sidebar.contains(event.target) && button && !button.contains(event.target)) {
+    toggleSidebar(false);
+  }
+});
+</script>
+
 </body>
 </html>
