@@ -971,7 +971,7 @@
   function detectSkill(message) {
     if (selectedSkill !== 'auto') return selectedSkill;
     const t = message.toLowerCase();
-    if (/\b(jam berapa|pukul berapa|waktu sekarang|tanggal sekarang|hari apa sekarang|sekarang jam berapa|current time|what time is it|wib|wita|wit)\b/.test(t)) return 'time';
+    if (/\b(jam berapa|berapa jam sekarang|pukul berapa|berapa pukul sekarang|waktu sekarang|jam sekarang|tanggal sekarang|hari apa sekarang|sekarang jam berapa|sekarang pukul berapa|hari ini tanggal berapa|tanggal hari ini|current time|what time is it|today.?s date|current date|what day is it)\b/.test(t) || /\b(wib|wita|wit)\b/.test(t)) return 'time';
     if (/\b(ocr|scan teks|hasil pindai|baca tulisan di gambar)\b/.test(t)) return 'ocr';
     if (/\b(pdf|docx|xlsx|pptx|word|powerpoint|office)\b/.test(t)) return 'pdf';
     if (/\b(database|sql|query sql|skema tabel|erd|migrasi database)\b/.test(t)) return 'database';
@@ -1250,13 +1250,25 @@
         const cost=item.content.length;
         if(cost<=budget){history.unshift(item);budget-=cost;}
       }
-      const response=await fetch(EL_GHIFARI_API_BASE+'/api/chat',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({message:requestMessage,history:history,memory_context:memoryContext,skill:skill,mode:skill==='expert'?'expert':'standard',context_limit:MAX_CONTEXT_CHARS,...(imageFile?{imageData:imageFile.content,imageMime:imageFile.type}: {})})
-      });
+      const timezone = /\b(wita|makassar|bali|denpasar)\b/i.test(message) ? 'Asia/Makassar'
+        : /\b(wit|papua|jayapura)\b/i.test(message) ? 'Asia/Jayapura'
+        : /\butc\b/i.test(message) ? 'UTC' : 'Asia/Jakarta';
+      const endpoint = skill === 'time'
+        ? EL_GHIFARI_API_BASE+'/api/time?timezone='+encodeURIComponent(timezone)
+        : EL_GHIFARI_API_BASE+'/api/chat';
+      const response = skill === 'time'
+        ? await fetch(endpoint,{method:'GET',cache:'no-store'})
+        : await fetch(endpoint,{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({message:requestMessage,history:history,memory_context:memoryContext,skill:skill,mode:skill==='expert'?'expert':'standard',context_limit:MAX_CONTEXT_CHARS,...(imageFile?{imageData:imageFile.content,imageMime:imageFile.type}: {})})
+          });
       let data={};try{data=await response.json();}catch(e){}
       if(!response.ok)throw new Error(data.error||data.detail||('HTTP '+response.status));
-      const answer=data.reply||data.response||data.answer||data.message||data.output||data.result;
+      const answer = skill === 'time'
+        ? (data.ok && data.time
+            ? 'Waktu saat ini: **'+data.time+' '+(data.timezone_label||data.timezone)+'**\\n\\nTanggal: **'+data.date+'**\\nZona waktu: `'+data.timezone+'`\\nTimestamp: `'+data.iso+'`\\n\\nWaktu diambil dari jam server saat permintaan diterima.'
+            : null)
+        : (data.reply||data.response||data.answer||data.message||data.output||data.result);
       if(typeof answer!=='string'||!answer.trim())throw new Error('Backend merespons, tetapi format balasan tidak dikenali.');
       pending.remove();renderMessage('assistant',answer);
       chatMessages.push({role:'assistant',content:answer,timestamp:Date.now()});saveCurrentChat();
