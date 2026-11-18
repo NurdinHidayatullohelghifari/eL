@@ -642,6 +642,7 @@
     box-shadow: 8px 0 30px rgba(0, 0, 0, .16);
   }
   .main { background: transparent; }
+  .sidebar.sidebar-collapsed { display:none; }
   .main-header {
     background: linear-gradient(90deg, rgba(15, 18, 39, .88), rgba(20, 18, 42, .78));
     border-bottom-color: rgba(120, 143, 225, .20);
@@ -735,6 +736,8 @@
 <div class="sidebar-scroll">
 <!-- ===== FITUR UPGRADE ===== -->
 <div class="section-title">✦ Skill AI</div>
+<div class="feature-item" onclick="selectFeature('time')"><div class="feature-icon">🕒</div><div class="feature-text"><div class="feature-name">Real-Time Clock &amp; Timezone</div><div class="feature-desc">Jam, tanggal, hari, WIB, WITA, dan WIT aktual</div></div></div>
+
 <div class="feature-item" onclick="selectFeature('auto')"><div class="feature-icon">🧭</div><div class="feature-text"><div class="feature-name">Auto Skill Router</div><div class="feature-desc">Memilih skill sesuai maksud permintaan</div></div></div>
 <div class="feature-item" onclick="selectFeature('deep')"><div class="feature-icon">🧠</div><div class="feature-text"><div class="feature-name">Deep Reasoning</div><div class="feature-desc">Analisis masalah kompleks, logika, strategi, keputusan</div></div></div>
 <div class="feature-item" onclick="selectFeature('rag')"><div class="feature-icon">🗃️</div><div class="feature-text"><div class="feature-name">Knowledge Base / RAG</div><div class="feature-desc">Pencarian berbasis dokumen dan referensi</div></div></div>
@@ -820,10 +823,10 @@
 <div class="header-actions">
 <button class="icon-btn" onclick="speakLastAnswer()" title="Bacakan jawaban">🔊</button>
 <button class="icon-btn" onclick="stopSpeaking()" title="Hentikan suara">⏹</button>
-<button class="icon-btn" title="Bagikan">🔗</button>
+<button class="icon-btn" onclick="shareConversation()" title="Bagikan percakapan">🔗</button>
 <button class="icon-btn" onclick="toggleTheme()" title="Mode">🌙</button>
 <button class="icon-btn" onclick="clearChat()" title="Hapus">🗑️</button>
-<button class="icon-btn" title="Tutup">✕</button>
+<button class="icon-btn" onclick="toggleSidebar()" title="Tampilkan/sembunyikan panel">☰</button>
 </div>
 </div>
 <!-- CHAT AREA -->
@@ -837,9 +840,9 @@
 </div>
 <!-- INPUT AREA -->
 <div class="input-container">
-<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 AI©el-ghifari v2.0 · 50 profil skill · Konteks maksimal 6.000 karakter</div>
+<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 AI©el-ghifari Cosmic · 51 profil skill · Waktu aktual, vision, dokumen, dan riset</div>
 <div class="input-wrapper">
-<textarea class="input-box" id="messageInput" maxlength="10000" oninput="autoResize(this); toggleSendBtn()" onkeydown="handleKey(event)" placeholder="Tanya apa saja..." rows="1"></textarea>
+<textarea class="input-box" id="messageInput" maxlength="4500" oninput="autoResize(this); toggleSendBtn()" onkeydown="handleKey(event)" placeholder="Tanya apa saja..." rows="1"></textarea>
 <div class="input-actions">
 <div class="input-tools">
 <button class="tool-btn" title="Lampirkan file" onclick="openAttachment()">📎</button>
@@ -876,7 +879,7 @@
       if(!response.ok)return;
       const data=await response.json();
       const q=data.quota||{};
-      status.textContent='🧭 AI©el-ghifari v2.0 · Kuota lokal: '+(q.daily_calls_used||0)+'/'+(q.daily_calls_limit||10)+' panggilan hari ini · '+(q.monthly_calls_used||0)+'/'+(q.monthly_calls_limit||150)+' per bulan (UTC)';
+      status.textContent='🧭 AI©el-ghifari Cosmic · Kuota: '+(q.daily_calls_used||0)+'/'+(q.daily_calls_limit||10)+' hari ini · '+(q.monthly_calls_used||0)+'/'+(q.monthly_calls_limit||150)+' per bulan (UTC)';
     }catch(e){ /* Keep the existing status if quota endpoint is temporarily unreachable. */ }
   }
 
@@ -887,7 +890,7 @@
   function toggleSendBtn() {
     const input = document.getElementById('messageInput');
     const btn = document.getElementById('sendBtn');
-    btn.disabled = input.value.trim() === '' || isSending;
+    btn.disabled = (input.value.trim() === '' && selectedFiles.length === 0) || isSending;
   }
   function handleKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -926,6 +929,7 @@
     expert: {label:'Expert Mode', prompt:'Gunakan mode ahli: jawaban terstruktur, mendalam, bernalar, menyebut asumsi, batasan, dan langkah praktis.'},
     image: {label:'Generasi gambar', prompt:'Bantu menyusun deskripsi/prompt gambar. Jika generator gambar tidak tersedia di backend, jelaskan keterbatasannya.'},
     voice: {label:'Percakapan suara', prompt:'Jawab dengan bahasa Indonesia yang natural dan mudah dipahami.'},
+    time: {label:'Real-Time Clock & Timezone', prompt:'Untuk pertanyaan jam/tanggal saat ini, gunakan data waktu server yang dikembalikan backend. Jangan menebak waktu.'},
     vision: {label:'Vision Intelligence', prompt:'Analisis gambar hanya berdasarkan gambar yang benar-benar diterima backend vision. Uraikan objek, teks yang terlihat, konteks, dan ketidakpastian. Jika gambar tidak diteruskan sebagai input visual, katakan bahwa gambar belum dapat dianalisis; jangan menebak.'},
     pdf: {label:'PDF & Office Expert', prompt:'Bantu membaca, menyusun, dan memeriksa PDF, DOCX, XLSX, serta PPTX. Gunakan hanya teks/isi file yang benar-benar tersedia. Jika file biner belum diekstrak backend, jelaskan bahwa ekstraksi diperlukan.'},
     ocr: {label:'OCR Intelligence', prompt:'Ekstrak dan rapikan teks dari gambar/pindaian hanya jika hasil OCR atau konten visual tersedia. Pertahankan angka, ejaan, tabel, dan tandai bagian yang tidak terbaca.'},
@@ -967,6 +971,7 @@
   function detectSkill(message) {
     if (selectedSkill !== 'auto') return selectedSkill;
     const t = message.toLowerCase();
+    if (/\b(jam berapa|pukul berapa|waktu sekarang|tanggal sekarang|hari apa sekarang|sekarang jam berapa|current time|what time is it|wib|wita|wit)\b/.test(t)) return 'time';
     if (/\b(ocr|scan teks|hasil pindai|baca tulisan di gambar)\b/.test(t)) return 'ocr';
     if (/\b(pdf|docx|xlsx|pptx|word|powerpoint|office)\b/.test(t)) return 'pdf';
     if (/\b(database|sql|query sql|skema tabel|erd|migrasi database)\b/.test(t)) return 'database';
@@ -1124,6 +1129,21 @@
       newChat(); renderHistory();
     }
   }
+  function toggleSidebar(){
+    const side=document.getElementById('sidebar');
+    if(!side)return;
+    if(window.matchMedia('(max-width: 768px)').matches) side.classList.toggle('open');
+    else side.classList.toggle('sidebar-collapsed');
+  }
+  async function shareConversation(){
+    const text=chatMessages.map(m=>(m.role==='user'?'Anda: ':'AI©el-ghifari: ')+String(m.content||'')).join('\n\n');
+    if(!text.trim()){alert('Belum ada percakapan untuk dibagikan.');return;}
+    try{
+      if(navigator.share) await navigator.share({title:'Percakapan AI©el-ghifari',text});
+      else if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(text);alert('Percakapan disalin ke clipboard.');}
+      else {downloadTextFile('percakapan-el-ghifari.txt',text);}
+    }catch(e){if(e.name!=='AbortError')alert('Tidak dapat membagikan percakapan: '+e.message);}
+  }
   function toggleTheme() {
     const dark=document.body.classList.toggle('light-theme');
     document.documentElement.dataset.theme=dark?'light':'dark';
@@ -1138,19 +1158,30 @@
     const files=Array.from(fileList||[]);
     for(const f of files){
       try{
-        if(f.size>2*1024*1024){alert('File '+f.name+' melebihi batas 2 MB pada mode hemat kuota.');continue;}
+        if(f.size>6*1024*1024){alert('File '+f.name+' melebihi batas 6 MB.');continue;}
+        if(f.type.startsWith('image/') && f.size>5*1024*1024){alert('Gambar maksimum 5 MB agar dapat dikirim ke backend.');continue;}
         let content='';
-        if(f.type.startsWith('text/') || /\.(txt|md|csv|json|html|xml|js|py|css)$/i.test(f.name)){
-          content=await f.text();
-        } else if(f.type.startsWith('image/')){
+        if(f.type.startsWith('image/')){
+          if(selectedFiles.some(x=>x.type && x.type.startsWith('image/'))){alert('Untuk menjaga batas ukuran dan kualitas analisis, lampirkan satu gambar per pesan.');continue;}
           content=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=reject;r.readAsDataURL(f);});
+        } else if(f.type.startsWith('text/') || /\.(txt|md|csv|json|html|xml|js|py|css|log)$/i.test(f.name)){
+          content=await f.text();
+        } else if(/\.(pdf|docx|xlsx|pptx)$/i.test(f.name)){
+          const form=new FormData();form.append('file',f,f.name);
+          const response=await fetch(EL_GHIFARI_API_BASE+'/api/extract',{method:'POST',body:form});
+          const data=await response.json().catch(()=>({}));
+          if(!response.ok)throw new Error(data.error||('Ekstraksi gagal HTTP '+response.status));
+          content='[Dokumen berhasil diekstrak: '+data.filename+' | '+data.characters+' karakter'+(data.truncated?' | isi dipotong':'')+']\n'+data.text;
         } else {
-          content='[File '+f.name+' ('+f.type+'): konten file tidak dapat dibaca langsung oleh browser. Unggah format teks/CSV/JSON atau dukungan PDF perlu ditambahkan di backend.]';
+          alert('Format '+f.name+' belum didukung untuk ekstraksi otomatis. Gunakan PDF, DOCX, XLSX, PPTX, TXT, MD, CSV, JSON, HTML, XML, JS, PY, atau CSS. Audio/video memerlukan transkrip.');
+          continue;
         }
         selectedFiles.push({name:f.name,type:f.type,size:f.size,content});
-      }catch(err){console.error(err);alert('Tidak dapat membaca file '+f.name);}
+      }catch(err){console.error(err);alert('Tidak dapat membaca '+f.name+': '+err.message);}
     }
-    updateAttachmentTray();
+    const a=document.getElementById('attachmentInput');if(a)a.value='';
+    const c=document.getElementById('cameraInput');if(c)c.value='';
+    updateAttachmentTray();toggleSendBtn();
   }
   function updateAttachmentTray(){
     const tray=document.getElementById('attachmentTray'); if(!tray)return;
