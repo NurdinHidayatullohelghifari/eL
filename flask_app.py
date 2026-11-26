@@ -21,6 +21,7 @@ import sqlite3
 import hashlib
 import hmac
 import io
+import csv
 import zipfile
 import xml.etree.ElementTree as ET
 from collections import defaultdict, deque
@@ -821,6 +822,8 @@ def health():
             },
             "vision_endpoint": True,
             "skill_router": True,
+            "csv_statistics_endpoint": True,
+            "capabilities_endpoint": True,
             "web_search": True,
             "knowledge_base": True,
             "knowledge_search_method": "SQLite FTS5 with LIKE fallback",
@@ -1100,3 +1103,47 @@ def internal_error(_error):
 
 if __name__ == "__main__":
     app.run(debug=False)
+
+@app.post("/api/analyze-csv")
+def analyze_csv_api():
+    """Lightweight, bounded CSV statistics endpoint (no arbitrary code execution)."""
+    if rate_limited(client_ip()):
+        return jsonify(error="Batas permintaan tercapai. Coba lagi satu menit kemudian."), 429
+    body = request.get_json(silent=True) or {}
+    raw = body.get("csv", "")
+    if not isinstance(raw, str) or not raw.strip():
+        return jsonify(error="Kirim isi CSV pada field csv."), 400
+    if len(raw) > 1_000_000:
+        return jsonify(error="CSV maksimum 1 MB."), 413
+    try:
+        rows = list(csv.DictReader(io.StringIO(raw)))
+    except Exception:
+        return jsonify(error="CSV tidak dapat dibaca."), 400
+    if not rows or len(rows) > 5000:
+        return jsonify(error="CSV harus berisi data dan maksimum 5.000 baris."), 400
+    headers = list(rows[0].keys()) if rows else []
+    if not headers or len(headers) > 100:
+        return jsonify(error="CSV maksimum 100 kolom."), 400
+    result = {"row_count":len(rows), "columns":[], "numeric_summary":{}}
+    for h in headers:
+        values=[r.get(h) for r in rows]
+        nonempty=[v for v in values if v is not None and str(v).strip()]
+        result["columns"].append({"name":h,"non_empty":len(nonempty),"missing":len(rows)-len(nonempty)})
+        nums=[]
+        for v in nonempty:
+            try:
+                n=float(str(v).replace(",", ""))
+                if n==n and abs(n)!=float("inf"): nums.append(n)
+            except (TypeError,ValueError): pass
+        if len(nums)>=2 and len(nums)>=0.7*len(nonempty):
+            nums.sort(); count=len(nums); mean=sum(nums)/count
+            result["numeric_summary"][h]={"count":count,"min":nums[0],"max":nums[-1],"mean":mean,"median":nums[count//2] if count%2 else (nums[count//2-1]+nums[count//2])/2}
+    return jsonify(ok=True, analysis=result, note="Statistik dasar dihitung server. Interpretasi/tren lanjutan dapat diminta melalui chat." )
+
+@app.get("/api/capabilities")
+def capabilities_api():
+    return jsonify(ok=True, capabilities={
+        "chat":True,"web_search":True,"vision":True,"document_extraction":True,"knowledge_base":True,"time":True,"csv_statistics":True,
+        "image_generation_provider_connected":False,"isolated_python_execution":False,"external_plugins_connected":False,"audio_transcription_provider_connected":False,
+        "details":"Fitur yang bertanda false memerlukan provider/infrastruktur tambahan."
+    })
