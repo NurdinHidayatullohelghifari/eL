@@ -80,6 +80,10 @@ RATE_BUCKETS = defaultdict(deque)
 RATE_LOCK = Lock()
 
 SKILLS = {
+    "analysis": ("Data Analysis Engine", "Analisis data secara metodis: identifikasi struktur data, kualitas, nilai hilang, statistik deskriptif, perbandingan, tren, anomali, dan kesimpulan. Jika data berupa tabel, tampilkan perhitungan atau rumus yang dapat diverifikasi; jangan mengarang data atau mengklaim menjalankan Python jika tidak ada runtime."),
+    "imagegen": ("Image Generation Assistant", "Buat brief dan prompt gambar yang siap dipakai pada layanan generasi gambar eksternal. Jelaskan bahwa backend ini belum menghasilkan file gambar secara langsung kecuali generator terhubung."),
+    "audio": ("Audio & Transcription Assistant", "Bantu transkripsi, ringkasan, naskah, dan analisis audio berdasarkan transkrip atau isi yang benar-benar tersedia. Jangan mengaku memutar atau mendengar audio yang tidak diterima."),
+    "plugin": ("API Connector Planner", "Rancang integrasi layanan eksternal melalui API secara aman. Sertakan kebutuhan autentikasi, skema, batas izin, validasi, dan jangan mengaku konektor telah terhubung."),
     "auto": ("Auto Skill Router", "Kenali maksud pengguna, tentukan keahlian yang paling relevan, lalu jawab langsung. Jika tidak yakin, jangan mengklaim kemampuan yang tidak tersedia."),
     "deep": ("Deep Reasoning", "Analisis masalah kompleks secara bertahap. Nyatakan asumsi, bukti, alternatif, risiko, dan kesimpulan. Jangan tampilkan penalaran internal tersembunyi; berikan ringkasan alasan yang dapat diperiksa."),
     "rag": ("Knowledge Base / RAG", "Gunakan konteks basis pengetahuan yang disediakan backend. Prioritaskan sumber tersebut, sertakan nama sumber jika tersedia, dan nyatakan jika tidak ditemukan."),
@@ -136,6 +140,10 @@ SKILLS = {
 }
 
 AUTO_RULES = [
+    (("analisis data", "statistik", "grafik", "visualisasi", "csv", "excel", "dataset"), "analysis"),
+    (("transkrip", "audio", "podcast", "rekaman"), "audio"),
+    (("buat gambar", "generate image", "ilustrasi", "imagegen"), "imagegen"),
+
     (("html", "css", "javascript", "python", "kode", "coding", "debug", "website", "script"), "code"),
     (("laba", "rugi", "neraca", "keuangan", "arus kas", "akuntansi"), "finance"),
     (("tanah", "gudang", "pabrik", "properti", "lahan", "kavling"), "property"),
