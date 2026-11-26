@@ -738,6 +738,8 @@
 <div class="section-title">✦ Skill AI</div>
 <div class="feature-item" onclick="selectFeature('time')"><div class="feature-icon">🕒</div><div class="feature-text"><div class="feature-name">Real-Time Clock &amp; Timezone</div><div class="feature-desc">Jam, tanggal, hari, WIB, WITA, dan WIT aktual</div></div></div>
 
+<div class="feature-item" onclick="selectFeature('analysis')"><div class="feature-icon">📉</div><div class="feature-text"><div class="feature-name">Data Analysis Engine</div><div class="feature-desc">Analisis dataset, statistik, tren, dan grafik</div></div></div>
+<div class="feature-item" onclick="selectFeature('plugin')"><div class="feature-icon">🔌</div><div class="feature-text"><div class="feature-name">API Connector Planner</div><div class="feature-desc">Rencana integrasi API dengan keamanan</div></div></div>
 <div class="feature-item" onclick="selectFeature('auto')"><div class="feature-icon">🧭</div><div class="feature-text"><div class="feature-name">Auto Skill Router</div><div class="feature-desc">Memilih skill sesuai maksud permintaan</div></div></div>
 <div class="feature-item" onclick="selectFeature('deep')"><div class="feature-icon">🧠</div><div class="feature-text"><div class="feature-name">Deep Reasoning</div><div class="feature-desc">Analisis masalah kompleks, logika, strategi, keputusan</div></div></div>
 <div class="feature-item" onclick="selectFeature('rag')"><div class="feature-icon">🗃️</div><div class="feature-text"><div class="feature-name">Knowledge Base / RAG</div><div class="feature-desc">Pencarian berbasis dokumen dan referensi</div></div></div>
@@ -840,7 +842,7 @@
 </div>
 <!-- INPUT AREA -->
 <div class="input-container">
-<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 AI©el-ghifari Cosmic · 51 profil skill · Waktu aktual, vision, dokumen, dan riset</div>
+<div id="skillStatus" role="status" aria-live="polite" style="max-width:768px;margin:0 auto 8px;font-size:11px;color:var(--text-secondary);">🧭 AI©el-ghifari Cosmic · Upgrade Skill Engine · Waktu aktual, vision, dokumen, riset, dan analisis data</div>
 <div class="input-wrapper">
 <textarea class="input-box" id="messageInput" maxlength="4500" oninput="autoResize(this); toggleSendBtn()" onkeydown="handleKey(event)" placeholder="Tanya apa saja..." rows="1"></textarea>
 <div class="input-actions">
@@ -918,8 +920,10 @@
     collaboration: {label:'Multi-Skill Collaboration', prompt:'Gabungkan beberapa keahlian yang relevan dalam satu jawaban. Susun tahapan, keluaran tiap keahlian, dan hasil akhir terpadu.'},
     planner: {label:'Task Planner', prompt:'Ubah tujuan menjadi tahapan kerja berurutan, dependensi, keluaran, kriteria selesai, dan risiko.'},
     recovery: {label:'Smart Error Recovery', prompt:'Diagnosis error secara aman. Minta atau gunakan pesan error yang tersedia, identifikasi kemungkinan penyebab, lalu berikan langkah pemulihan dan fallback.'},
+    analysis: {label:'Data Analysis Engine', prompt:'Analisis data dengan langkah yang dapat diperiksa: struktur, kualitas, nilai kosong, statistik, tren, perbandingan, anomali, dan kesimpulan. Gunakan tabel dan rumus bila membantu; jangan mengarang angka atau mengklaim menjalankan kode.'},
+    plugin: {label:'API Connector Planner', prompt:'Rancang integrasi API eksternal secara aman: endpoint, skema, autentikasi, permission minimal, validasi, error handling, dan cara uji. Jangan mengklaim konektor aktif atau aksi sudah dilakukan.'},
     auto: {label:'Auto Skill Router', prompt:'Kenali maksud pengguna, pilih keahlian paling relevan secara otomatis, lalu jawab langsung.'},
-    code: {label:'Advanced Coding', prompt:'Bertindak sebagai asisten pemrograman. Buat kode HTML, CSS, JavaScript, atau Python yang lengkap dan dapat dijalankan. Debug secara sistematis dan jelaskan perubahan penting.'},
+    code: {label:'Advanced Coding', prompt:'Bertindak sebagai engineer senior. Buat kode lengkap, modular, responsif, aman, dan siap diuji. Pertahankan desain yang diminta; jelaskan file yang diubah, dependensi, cara menjalankan, test case, dan batasan. Debug berdasarkan bukti dan jangan mengklaim test berhasil jika belum dijalankan.'},
     creator: {label:'File Creator', prompt:'Jika pengguna meminta file, hasilkan isi file yang lengkap dalam code fence dengan label bahasa/format yang tepat (html, python, txt, csv, atau json). Jangan mengaku telah membuat file unduhan jika belum tersedia.'},
     finance: {label:'Financial Analyst', prompt:'Analisis data keuangan secara terstruktur: asumsi, pendapatan, biaya, laba-rugi, neraca, arus kas, rasio, risiko, dan kesimpulan. Jangan mengarang angka; tandai data yang belum tersedia.'},
     web: {label:'Web Research', prompt:'Lakukan riset web jika backend menyediakan pencarian. Sertakan tautan/referensi dan tanggal sumber; bedakan fakta sumber dengan analisis.'},
